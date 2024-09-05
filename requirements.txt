@@ -1,0 +1,16 @@
+# Base (production)
+Flask==3.0.3
+Flask-RESTful==0.3.10
+python-dotenv>=1.0.1
+
+kronoterm-cloud-api @ git+https://github.com/LeskoIam/kronoterm_cloud_api@v0.0.2
+
+# Development
+ruff>=0.6.3
+
+# Build
+# build>=1.2.1
+
+# Distribute
+# twine>=5.1.1
+

@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from flask_restful import reqparse, abort, Api, Resource
+from flask_restful import reqparse, Api, Resource
 from hp_enums import HeatingLoopMode
 from kronoterm_cloud_api import KronotermCloudApi, HeatingLoop
 
@@ -30,17 +30,19 @@ class HPInfo(Resource):
     def get(self, about):
         match about:
             case "general":
-                return hp_api.get_circle_2()
+                return {"data": hp_api.get_circle_2()}
             case "set_temperature":
-                return hp_api.get_heating_loop_set_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP)
+                return {"data": hp_api.get_heating_loop_set_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP)}
             case "room_temperature":
-                return hp_api.get_room_temp()
+                return {"data": hp_api.get_room_temp()}
+            case "outside_temperature":
+                return {"data": hp_api.get_outside_temperature()}
             case "outlet_temperature":
-                return hp_api.get_outlet_temp()
+                return {"data": hp_api.get_outlet_temp()}
             case "working_function":
-                return hp_api.get_working_function().name
+                return {"data": hp_api.get_working_function().name}
             case "working_status":
-                return hp_api.get_working_status()
+                return {"data": hp_api.get_working_status()}
             case _:
                 return f"about/{about} not supported", 404
 

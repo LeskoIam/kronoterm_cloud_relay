@@ -17,13 +17,6 @@ hp_api.login()
 app = Flask(__name__)
 api = Api(app)
 
-# TODOS = {
-#     'todo1': {'task': 'build an API'},
-#     'todo2': {'task': '?????'},
-#     'todo3': {'task': 'profit!'},
-# }
-
-
 # def abort_if_todo_doesnt_exist(todo_id):
 #     if todo_id not in TODOS:
 #         abort(404, message="Todo {} doesn't exist".format(todo_id))
@@ -48,6 +41,8 @@ class HPInfo(Resource):
                 return hp_api.get_working_function().name
             case "working_status":
                 return hp_api.get_working_status()
+            case _:
+                return f"about/{about} not supported", 404
 
 
 class HPController(Resource):

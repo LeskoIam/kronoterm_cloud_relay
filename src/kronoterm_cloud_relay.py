@@ -41,6 +41,8 @@ class HPInfo(Resource):
                 return {"data": hp_api.get_working_function().name}
             case "working_status":
                 return {"data": hp_api.get_working_status()}
+            case "working_mode":
+                return {"data": hp_api.get_heating_loop_mode(HeatingLoop.LOW_TEMPERATURE_LOOP).name}
             case "water_temperature":
                 return {"data": hp_api.get_sanitary_water_temp()}
             case _:

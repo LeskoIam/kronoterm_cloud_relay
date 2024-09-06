@@ -80,4 +80,35 @@ sensor:
     value_template: "{{ value_json.data }}"
     timeout: 20
     scan_interval: 60
+    
+  - platform: rest
+    name: "Heat pump working mode"
+    unique_id: generate-your-own-unique-id
+    resource: your-relay-host:8555/hp-info/working_mode
+    method: GET
+    value_template: "{{ value_json.data }}"
+    timeout: 20
+    scan_interval: 60
+
+rest_command:
+  hp_set_mode_on:
+    url: http://your-relay-host:8555/hp-control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "ON"}'
+    content_type: 'application/json'
+  hp_set_mode_off:
+    url: http://your-relay-host:8555/hp-control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "OFF"}'
+    content_type: 'application/json'
+  hp_set_mode_auto:
+    url: http://your-relay-host:8555/hp-control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "AUTO"}'
+    content_type: 'application/json'
+  hp_set_temperature:
+    url: http://your-relay-host:8555/hp-control/set_temperature
+    method: POST
+    payload: '{"temperature": "{{ set_temp }}" }'
+    content_type: 'application/json'
 ```

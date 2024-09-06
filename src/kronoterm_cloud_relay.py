@@ -1,17 +1,14 @@
 import os
 
-from flask import Flask
-from flask_restful import reqparse, Api, Resource
-from hp_enums import HeatingLoopMode
-from kronoterm_cloud_api import KronotermCloudApi, HeatingLoop
-
 from dotenv import load_dotenv
+from flask import Flask
+from flask_restful import Api, Resource, reqparse
+from hp_enums import HeatingLoopMode
+from kronoterm_cloud_api import HeatingLoop, KronotermCloudApi
 
 load_dotenv()
 
-hp_api = KronotermCloudApi(
-    username=os.getenv("KRONOTERM_CLOUD_USER"), password=os.getenv("KRONOTERM_CLOUD_PASSWORD")
-)
+hp_api = KronotermCloudApi(username=os.getenv("KRONOTERM_CLOUD_USER"), password=os.getenv("KRONOTERM_CLOUD_PASSWORD"))
 hp_api.login()
 
 app = Flask(__name__)
@@ -22,12 +19,13 @@ api = Api(app)
 #         abort(404, message="Todo {} doesn't exist".format(todo_id))
 
 parser = reqparse.RequestParser()
-parser.add_argument('temperature', type=float)
-parser.add_argument('mode', type=str)
+parser.add_argument("temperature", type=float)
+parser.add_argument("mode", type=str)
 
 
 class HPInfo(Resource):
     def get(self, about):
+        """Get heat pump data based on `about` argument"""
         match about:
             case "general":
                 return {"data": hp_api.get_circle_2()}
@@ -43,12 +41,15 @@ class HPInfo(Resource):
                 return {"data": hp_api.get_working_function().name}
             case "working_status":
                 return {"data": hp_api.get_working_status()}
+            case "water_temperature":
+                return {"data": hp_api.get_sanitary_water_temp()}
             case _:
                 return f"about/{about} not supported", 404
 
 
 class HPController(Resource):
     def post(self, operation):
+        """Set heat pump temperature and operation mode"""
         args = parser.parse_args()
         print(args)
         print(operation)
@@ -60,6 +61,7 @@ class HPController(Resource):
                     return_message = {"message": f"Set temperature to {temp} degrees Celsius"}
                 else:
                     return_message = {"message": "set-temperature arg/s missing"}
+
             case "set_heating_loop_mode":
                 mode = args.get("mode").upper()
                 if mode is not None:
@@ -82,8 +84,11 @@ class HPController(Resource):
 
 class RelayController(Resource):
     def post(self, operation):
+        """Relay control and status"""
         print(operation)
         match operation:
+            case "echo":
+                return_message = {"message": operation}
             case "login":
                 hp_api.login()
                 return_message = {"message": "Login successful"}
@@ -96,10 +101,10 @@ class RelayController(Resource):
 ##
 ## Actually setup the Api resource routing here
 ##
-api.add_resource(HPInfo, '/hp-info/<about>')
-api.add_resource(RelayController, '/relay/<operation>')
-api.add_resource(HPController, '/hp-control/<operation>')
+api.add_resource(HPInfo, "/hp-info/<about>")
+api.add_resource(RelayController, "/relay/<operation>")
+api.add_resource(HPController, "/hp-control/<operation>")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

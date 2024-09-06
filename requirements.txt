@@ -2,15 +2,15 @@
 Flask==3.0.3
 Flask-RESTful==0.3.10
 python-dotenv>=1.0.1
-
-kronoterm-cloud-api @ git+https://github.com/LeskoIam/kronoterm_cloud_api@v0.0.2
+kronoterm-cloud-api>=0.0.5
 
 # Development
-ruff>=0.6.3
+ruff>=0.6.4
 
 # Build
-# build>=1.2.1
+build>=1.2.1
 
 # Distribute
-# twine>=5.1.1
+twine>=5.1.1
+
 

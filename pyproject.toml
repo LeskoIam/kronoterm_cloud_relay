@@ -1,22 +1,24 @@
-#[build-system]
-#requires = ["setuptools"]
-#build-backend = "setuptools.build_meta"
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "kronoterm-cloud-api"
+name = "kronoterm-cloud-relay"
 version = "0.0.1"
 readme = "README.md"
-description = "API for Kronoterm heat pumps cloud"
+description = "Relay between kronoterm cloud API and local network API"
 authors = [{name = "Matevž", email = "matevzlesko@gmail.com"},]
 
 
 license = {file = "LICENSE"}
 
 requires-python = ">=3.8"
-#dependencies = [
-#    "requests>=2.32.3",
-#    "cachetools>=5.4.0"
-#]
+dependencies = [
+    "Flask>=3.0.3",
+    "Flask-RESTful>=0.3.10",
+    "python-dotenv>=1.0.1",
+    "kronoterm-cloud-api>=0.0.5"
+]
 
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -24,9 +26,28 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-#[project.urls]
-#Homepage = "https://github.com/LeskoIam/kronoterm_cloud_api"
-#Issues = "https://github.com/LeskoIam/kronoterm_cloud_api/issues"
+[project.urls]
+Homepage = "https://github.com/LeskoIam/kronoterm_cloud_relay"
+Issues = "https://github.com/LeskoIam/kronoterm_cloud_relay/issues"
+
+
+[tool.bumpver]
+current_version = "0.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "Bump version {old_version} -> {new_version}."
+tag_message = "v{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"'
+]
 
 
 [tool.ruff]

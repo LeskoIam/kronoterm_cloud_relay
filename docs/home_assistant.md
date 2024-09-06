@@ -1,5 +1,8 @@
-Assuming you have kronoterm-cloud-relay running and reachable
-following needs to be added to your home assistant `configuration.yaml` file.
+## Home Assistant Configuration
+
+Assuming you have kronoterm-cloud-relay running and reachable following needs to be added to your home assistant:
+
+### `configuration.yaml` file.
 
 ```yaml
 sensor:
@@ -111,4 +114,26 @@ rest_command:
     method: POST
     payload: '{"temperature": "{{ set_temp }}" }'
     content_type: 'application/json'
+```
+
+### Automation to sync it to `input_number` helper
+
+```yaml
+alias: HP_set_room_temperature
+description: >-
+  Set room temperature every time 'input_number.heat_pump_set_temperature' is
+  changed
+trigger:
+  - platform: state
+    entity_id:
+      - input_number.heat_pump_set_temperature
+    from: null
+    to: null
+condition: []
+action:
+  - action: rest_command.hp_set_temperature
+    metadata: {}
+    data:
+      set_temp: "{{ states('input_number.heat_pump_set_temperature') }}"
+mode: single
 ```

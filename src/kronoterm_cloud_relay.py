@@ -14,10 +14,6 @@ hp_api.login()
 app = Flask(__name__)
 api = Api(app)
 
-# def abort_if_todo_doesnt_exist(todo_id):
-#     if todo_id not in TODOS:
-#         abort(404, message="Todo {} doesn't exist".format(todo_id))
-
 parser = reqparse.RequestParser()
 parser.add_argument("temperature", type=float)
 parser.add_argument("mode", type=str)

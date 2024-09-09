@@ -1,7 +1,7 @@
 [![ruff](https://github.com/LeskoIam/kronoterm_cloud_relay/actions/workflows/ruff.yml/badge.svg?branch=master)](https://github.com/LeskoIam/kronoterm_cloud_relay/actions/workflows/ruff.yml)
 # Kronoterm cloud relay
 
-Relay server for kronoterm cloud. It gets data from cloud and exposes it through REST API to local network. 
+Relay server for [Kronoterm](https://kronoterm.com//) cloud. It gets data from cloud and exposes it through REST API to local network. 
 
 ## Install and run relay
 
@@ -26,7 +26,7 @@ cd src
 nohup flask --app kronoterm_cloud_relay run --host=0.0.0.0 --port=8555 &
 ```
 
-## Usage with Home [Assistant](https://www.home-assistant.io/)
+## Usage with [Home Assistant](https://www.home-assistant.io/)
 Home Assistant has [REST](https://www.home-assistant.io/integrations/rest) integration which can request data from relay.
 
 Refer to [Home Assistant Readme](./docs/home_assistant.md) for details.

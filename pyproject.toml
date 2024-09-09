@@ -17,7 +17,7 @@ dependencies = [
     "Flask>=3.0.3",
     "Flask-RESTful>=0.3.10",
     "python-dotenv>=1.0.1",
-    "kronoterm-cloud-api>=0.0.5"
+    "kronoterm-cloud-api>=0.1.2"
 ]
 
 classifiers = [
@@ -47,6 +47,9 @@ push = true
 "pyproject.toml" = [
     'current_version = "{version}"',
     'version = "{version}"'
+]
+"src/kronoterm_cloud_relay.py" = [
+    '__version__ = "{version}"',
 ]
 
 

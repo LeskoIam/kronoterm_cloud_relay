@@ -99,7 +99,6 @@ sensor:
     scan_interval: 60
     resource: http://your-relay-host:8555/hp-info/info_summary
     value_template: "{{ value_json.working_status }}"
-    # json_attributes_path: "$"
     json_attributes:
       - room_temperature
       - outside_temperature
@@ -130,7 +129,52 @@ rest_command:
     payload: '{"temperature": "{{ set_temp }}" }'
     content_type: 'application/json'
 ```
-
+#### Creating template sensors from `Heat pump low temperature loop` attribute data
+```yaml
+###############
+## HEAT PUMP ##
+###############
+- sensor:
+  - name: "Heat pump room temperature"
+    unique_id: 6e2d97a6-f2be-43dd-a389-91daf602fa20
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'room_temperature') }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: "Heat pump outlet temperature"
+    unique_id: 19451526-f813-43a3-88bd-823b1ea464fb
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'outlet_temperature') }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: "Heat pump configured room temperature"
+    unique_id: 479e8ee1-5dce-4ffb-9339-57c65211634c
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'low_temp_target_temp') }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: "Heat pump outside temperature"
+    unique_id: 3316cf5a-6ecf-4c18-8821-69a58fd57ac7
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'outside_temperature') }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: "Sanitary water temperature"
+    unique_id: 12fa0800-577f-4230-a9f9-f5fad8f6b26a
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'sanitary_water_temperature') }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: "Heat pump working function"
+    unique_id: 4997f71d-eb60-43d9-a3c0-e1df2e721f24
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'working_function') }}"
+  - name: "Heat pump working status"
+    unique_id: 9f725bb6-6be6-407f-8cb0-e755f7c1797c
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'working_status') }}"
+  - name: "Heat pump working mode"
+    unique_id: 26b86176-853e-4829-aa9e-c1f0aaa86905
+    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'working_mode') }}"
+```
 ### Automation to sync it to `input_number` helper
 
 ```yaml

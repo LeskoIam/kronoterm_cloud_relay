@@ -5,8 +5,8 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
-from kronoterm_cloud_api.enums.hp_enums import HeatingLoop, HeatingLoopMode
-from kronoterm_cloud_api.kronoterm_cloud_api import KronotermCloudApi
+from kronoterm_cloud_api import KronotermCloudApi
+from kronoterm_enums import HeatingLoop, HeatingLoopMode
 
 load_dotenv()
 
@@ -25,8 +25,10 @@ class HPInfo(Resource):
     def get(self, about):
         """Get heat pump data based on `about` argument"""
         match about:
-            case "general":
+            case "heat_loop_2":
                 return {"data": hp_api.get_heating_loop_data(HeatingLoop.LOW_TEMPERATURE_LOOP)}
+            case "system_review":
+                return {"data": hp_api.get_system_review_data()}
             case "set_temperature":
                 return {"data": hp_api.get_heating_loop_target_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP)}
             case "room_temperature":

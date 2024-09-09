@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 from kronoterm_cloud_api import KronotermCloudApi
-from kronoterm_enums import HeatingLoop, HeatingLoopMode
+from kronoterm_enums import HeatingLoop, HeatingLoopMode, WorkingFunction
 
 load_dotenv()
 
@@ -21,10 +21,42 @@ parser.add_argument("temperature", type=float)
 parser.add_argument("mode", type=str)
 
 
+def info_summary():
+    """Heating loop 2 summary.
+
+    :return: summary for heating loop 2
+    """
+    system_review_data = hp_api.get_system_review_data()
+    low_temp_loop_data = hp_api.get_heating_loop_data(HeatingLoop.LOW_TEMPERATURE_LOOP)
+
+    room_temperature = system_review_data["TemperaturesAndConfig"]["heating_circle_2_temp"]
+    outlet_temperature = system_review_data["CurrentFunctionData"][0]["dv_temp"]
+    low_temp_target_temp = low_temp_loop_data["HeatingCircleData"]["circle_temp"]
+    outside_temperature = system_review_data["TemperaturesAndConfig"]["outside_temp"]
+    sanitary_water_temperature = system_review_data["TemperaturesAndConfig"]["tap_water_temp"]
+    working_function = system_review_data["TemperaturesAndConfig"]["working_function"]
+    working_status = low_temp_loop_data["HeatingCircleData"]["circle_status"]
+    working_mode = low_temp_loop_data["HeatingCircleData"]["circle_mode"]
+
+    output = {
+        "room_temperature": room_temperature,
+        "outside_temperature": outside_temperature,
+        "sanitary_water_temperature": sanitary_water_temperature,
+        "outlet_temperature": outlet_temperature,
+        "low_temp_target_temp": low_temp_target_temp,
+        "working_function": WorkingFunction(working_function).name,
+        "working_status": working_status,
+        "working_mode": HeatingLoopMode(working_mode).name,
+    }
+    return output
+
+
 class HPInfo(Resource):
     def get(self, about):  # noqa: C901
         """Get heat pump data based on `about` argument"""
         match about:
+            case "info_summary":
+                return info_summary()
             case "heat_loop_2":
                 return {"data": hp_api.get_heating_loop_data(HeatingLoop.LOW_TEMPERATURE_LOOP)}
             case "system_review":

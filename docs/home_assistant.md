@@ -94,29 +94,19 @@ sensor:
     scan_interval: 60
   
   - platform: rest
-    name: Heat pump system review data
+    name: Heat pump low temperature loop
     unique_id: generate-your-own-unique-id
     scan_interval: 60
-    resource: http://your-relay-host:8555/hp-info/system_review
-    value_template: "{{ value_json.data.tableName }}"
-    json_attributes_path: "$.data.TemperaturesAndConfig"
+    resource: http://your-relay-host:8555/hp-info/info_summary
+    value_template: "{{ value_json.working_status }}"
+    # json_attributes_path: "$"
     json_attributes:
-      - heating_circle_2_temp
-      - outside_temp
-      - tap_water_temp
-      - working_function
-      
-  - platform: rest
-    name: Heat pump heat loop 2 data
-    unique_id: generate-your-own-unique-id
-    scan_interval: 60
-    resource: http://your-relay-host:8555/hp-info/heat_loop_2
-    value_template: "{{ value_json.data.tableName }}"
-    json_attributes_path: "$.data.HeatingCircleData"
-    json_attributes:
-      - circle_temp
-      - circle_status
-      - circle_mode
+      - room_temperature
+      - outside_temperature
+      - sanitary_water_temperature
+      - outlet_temperature
+      - low_temp_target_temp
+      - working_mode
 
 rest_command:
   hp_set_mode_on:

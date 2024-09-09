@@ -87,11 +87,36 @@ sensor:
   - platform: rest
     name: "Heat pump working mode"
     unique_id: generate-your-own-unique-id
-    resource: your-relay-host:8555/hp-info/working_mode
+    resource: http://your-relay-host:8555/hp-info/working_mode
     method: GET
     value_template: "{{ value_json.data }}"
     timeout: 20
     scan_interval: 60
+  
+  - platform: rest
+    name: Heat pump system review data
+    unique_id: generate-your-own-unique-id
+    scan_interval: 60
+    resource: http://your-relay-host:8555/hp-info/system_review
+    value_template: "{{ value_json.data.tableName }}"
+    json_attributes_path: "$.data.TemperaturesAndConfig"
+    json_attributes:
+      - heating_circle_2_temp
+      - outside_temp
+      - tap_water_temp
+      - working_function
+      
+  - platform: rest
+    name: Heat pump heat loop 2 data
+    unique_id: generate-your-own-unique-id
+    scan_interval: 60
+    resource: http://your-relay-host:8555/hp-info/heat_loop_2
+    value_template: "{{ value_json.data.tableName }}"
+    json_attributes_path: "$.data.HeatingCircleData"
+    json_attributes:
+      - circle_temp
+      - circle_status
+      - circle_mode
 
 rest_command:
   hp_set_mode_on:

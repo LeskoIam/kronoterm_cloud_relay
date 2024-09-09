@@ -22,7 +22,7 @@ parser.add_argument("mode", type=str)
 
 
 class HPInfo(Resource):
-    def get(self, about):
+    def get(self, about):  # noqa: C901
         """Get heat pump data based on `about` argument"""
         match about:
             case "heat_loop_2":

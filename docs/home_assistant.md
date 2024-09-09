@@ -105,6 +105,8 @@ sensor:
       - sanitary_water_temperature
       - outlet_temperature
       - low_temp_target_temp
+      - working_function
+      - working_status
       - working_mode
 
 rest_command:

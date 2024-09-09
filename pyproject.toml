@@ -48,6 +48,9 @@ push = true
     'current_version = "{version}"',
     'version = "{version}"'
 ]
+"src/kronoterm_cloud_relay.py" = [
+    '__version__ = "{version}"',
+]
 
 
 [tool.ruff]

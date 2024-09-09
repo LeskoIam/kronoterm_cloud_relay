@@ -1,0 +1,1 @@
+python -m bumpver update --%1

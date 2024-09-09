@@ -16,9 +16,9 @@ KRONOTERM_CLOUD_PASSWORD=your-password
 python -m venv .venv
 source .venv/bin/activate
 ```
-4. Install dependencies
+4. Install dependencies (install `requirements.txt` if you want development packages also)
 ```shell
-python -m pip install -r requirements.txt
+python -m pip install -r prod_requirements.txt
 ```
 5. Run REST API server in the background
 ```shell
@@ -27,6 +27,6 @@ nohup flask --app kronoterm_cloud_relay run --host=0.0.0.0 --port=8555 &
 ```
 
 ## Usage with [Home Assistant](https://www.home-assistant.io/)
-Home Assistant has [REST](https://www.home-assistant.io/integrations/rest) integration which can request data from relay.
+Home Assistant has [REST](https://www.home-assistant.io/integrations/rest) integration which can request and post data from `relay`.
 
 Refer to [Home Assistant Readme](./docs/home_assistant.md) for details.

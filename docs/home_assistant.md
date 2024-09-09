@@ -4,6 +4,9 @@ Assuming you have kronoterm-cloud-relay running and reachable following needs to
 
 ### `configuration.yaml` file.
 
+If you are using hostnames for addressing you network devices I would advise to still **use IPs here**.
+I found out the hard way if using hostnames sensors go to `unknown` or `unavailable` state. 
+
 ```yaml
 sensor:
   - platform: rest

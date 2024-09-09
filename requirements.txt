@@ -2,7 +2,7 @@
 Flask==3.0.3
 Flask-RESTful==0.3.10
 python-dotenv>=1.0.1
-kronoterm-cloud-api>=0.0.5
+kronoterm-cloud-api==0.1.1
 
 # Development
 ruff>=0.6.4
@@ -12,5 +12,3 @@ build>=1.2.1
 
 # Distribute
 twine>=5.1.1
-
-

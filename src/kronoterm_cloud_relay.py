@@ -1,10 +1,12 @@
+__version__ = "0.0.1"
+
 import os
 
 from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
-from hp_enums import HeatingLoopMode
-from kronoterm_cloud_api import HeatingLoop, KronotermCloudApi
+from kronoterm_cloud_api.enums.hp_enums import HeatingLoop, HeatingLoopMode
+from kronoterm_cloud_api.kronoterm_cloud_api import KronotermCloudApi
 
 load_dotenv()
 
@@ -24,9 +26,9 @@ class HPInfo(Resource):
         """Get heat pump data based on `about` argument"""
         match about:
             case "general":
-                return {"data": hp_api.get_circle_2()}
+                return {"data": hp_api.get_heating_loop_data(HeatingLoop.LOW_TEMPERATURE_LOOP)}
             case "set_temperature":
-                return {"data": hp_api.get_heating_loop_set_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP)}
+                return {"data": hp_api.get_heating_loop_target_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP)}
             case "room_temperature":
                 return {"data": hp_api.get_room_temp()}
             case "outside_temperature":
@@ -36,7 +38,7 @@ class HPInfo(Resource):
             case "working_function":
                 return {"data": hp_api.get_working_function().name}
             case "working_status":
-                return {"data": hp_api.get_working_status()}
+                return {"data": hp_api.get_heating_loop_working_status(HeatingLoop.LOW_TEMPERATURE_LOOP)}
             case "working_mode":
                 return {"data": hp_api.get_heating_loop_mode(HeatingLoop.LOW_TEMPERATURE_LOOP).name}
             case "water_temperature":
@@ -49,13 +51,11 @@ class HPController(Resource):
     def post(self, operation):
         """Set heat pump temperature and operation mode"""
         args = parser.parse_args()
-        print(args)
-        print(operation)
         match operation:
             case "set_temperature":
                 temp = args.get("temperature")
                 if temp is not None:
-                    hp_api.set_heating_loop_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP, temp)
+                    hp_api.set_heating_loop_target_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP, temp)
                     return_message = {"message": f"Set temperature to {temp} degrees Celsius"}
                 else:
                     return_message = {"message": "set-temperature arg/s missing"}
@@ -83,7 +83,6 @@ class HPController(Resource):
 class RelayController(Resource):
     def post(self, operation):
         """Relay control and status"""
-        print(operation)
         match operation:
             case "echo":
                 return_message = {"message": operation}

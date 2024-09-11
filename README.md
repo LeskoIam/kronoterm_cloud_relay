@@ -37,6 +37,7 @@ Relay server for [Kronoterm](https://kronoterm.com//) cloud. It gets data from c
    - `--host=0.0.0.0` - run app on all addresses (to be available on local network)
    - `--port=8555` - port on which to run, like in http://192.168.1.111:8555
    - `&` - run process in the background
+   
    Running in the foreground (with output to console) can be enabled by running flask server without `nohup` and `&`
    ```shell
    python -m flask --app kronoterm_cloud_relay run --host=0.0.0.0 --port=8555

@@ -51,6 +51,9 @@ push = true
 "src/kronoterm_cloud_relay.py" = [
     '__version__ = "{version}"',
 ]
+"README.md" = [
+    '{"version": "{version}"}'
+]
 
 
 [tool.ruff]

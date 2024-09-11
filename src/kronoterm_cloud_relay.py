@@ -116,6 +116,7 @@ class HPController(Resource):
 
 class RelayController(Resource):
     def get(self, operation):
+        """Healthcheck endpoint"""
         return_message = {"message": f"relay - echo '{operation}' - OK"}
         return return_message, 200
 

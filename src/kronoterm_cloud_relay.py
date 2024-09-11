@@ -132,12 +132,19 @@ class RelayController(Resource):
         return return_message, 200
 
 
-##
-## Actually setup the Api resource routing here
-##
+class RelayControllerVersion(Resource):
+    def get(self):
+        """Return current version"""
+        return_message = {"version": __version__}
+        return return_message, 200
+
+
+## Actually set up the API resource routing here
 api.add_resource(HPInfo, "/hp-info/<about>")
-api.add_resource(RelayController, "/relay/<operation>")
 api.add_resource(HPController, "/hp-control/<operation>")
+
+api.add_resource(RelayControllerVersion, "/version")
+api.add_resource(RelayController, "/relay/<operation>")
 
 
 if __name__ == "__main__":

@@ -115,11 +115,13 @@ class HPController(Resource):
 
 
 class RelayController(Resource):
+    def get(self, operation):
+        return_message = {"message": f"relay - echo '{operation}' - OK"}
+        return return_message, 200
+
     def post(self, operation):
         """Relay control and status"""
         match operation:
-            case "echo":
-                return_message = {"message": operation}
             case "login":
                 hp_api.login()
                 return_message = {"message": "Login successful"}

@@ -47,12 +47,21 @@ Relay server for [Kronoterm](https://kronoterm.com//) cloud. It gets data from c
 ## Try it out
 With your favorite browser navigate to 
 
+`ip-or-host-address:8555/version`
+
+return should be the current version of kronoterm-cloud-relay
+```python
+{"version": "0.0.3"}
+```
+or
+
 `ip-or-host-address:8555/relay/is_it_working`
 
-Return should be something like
+return should be whatever the last argument is, in this case `is_it_working`
 ```python
 {"message": "relay - echo 'is_it_working' - OK"}
 ```
+
 #### Home Assistant uses this one to avoid multiple API calls
 - `http://ip-or-host-address:8555/hp-info/info_summary`
 

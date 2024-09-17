@@ -70,7 +70,7 @@ return should be whatever the last argument is, in this case `is_it_working`
 Method: `GET`
 - `http://ip-or-host-address:8555/hp-info/heat_loop_2`
 - `http://ip-or-host-address:8555/hp-info/system_review`
-- `http://ip-or-host-address:8555/hp-info/set_temperature`
+- `http://ip-or-host-address:8555/hp-info/target_temperature`
 - `http://ip-or-host-address:8555/hp-info/room_temperature`
 - `http://ip-or-host-address:8555/hp-info/outside_temperature`
 - `http://ip-or-host-address:8555/hp-info/working_function`

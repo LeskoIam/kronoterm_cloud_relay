@@ -12,13 +12,11 @@ load_dotenv()
 
 hp_api = KronotermCloudApi(username=os.getenv("KRONOTERM_CLOUD_USER"), password=os.getenv("KRONOTERM_CLOUD_PASSWORD"))
 hp_api.login()
+hp_api.update_heat_pump_basic_information()
 
 app = Flask(__name__)
 api = Api(app)
-
 parser = reqparse.RequestParser()
-parser.add_argument("temperature", type=float)
-parser.add_argument("mode", type=str)
 
 
 def info_summary():
@@ -80,17 +78,27 @@ class HPInfo(Resource):
             case _:
                 return f"about/{about} not supported", 404
 
+parser.add_argument("temperature", type=float)
+parser.add_argument("mode", type=str)
+# HeatingLoop.HEATING_LOOP_1 = 1
+# HeatingLoop.HEATING_LOOP_2 = 2
+# HeatingLoop.TAP_WATER = 3
+parser.add_argument("heating_loop", type=int)
 
 class HPController(Resource):
     def post(self, operation):
         """Set heat pump temperature and operation mode"""
         args = parser.parse_args()
+        heating_loop = args.get("heating_loop")
+        if heating_loop not in HeatingLoop:
+            return {"message": f"Heating loop '{heating_loop}' not supported"}, 404
+        heating_loop = HeatingLoop(heating_loop)
         match operation:
             case "set_temperature":
                 temp = args.get("temperature")
                 if temp is not None:
-                    hp_api.set_heating_loop_target_temperature(HeatingLoop.LOW_TEMPERATURE_LOOP, temp)
-                    return_message = {"message": f"Set temperature to {temp} degrees Celsius"}
+                    hp_api.set_heating_loop_target_temperature(heating_loop, temp)
+                    return_message = {"message": f"Set temperature of '{heating_loop.name}' to {temp} degrees Celsius"}
                 else:
                     return_message = {"message": "set-temperature arg/s missing"}
 
@@ -100,13 +108,15 @@ class HPController(Resource):
                     mode = mode.upper()
                     return_message = {"message": f"Set mode to {mode}"}
                     if mode == "ON":
-                        hp_api.set_heating_loop_mode(HeatingLoop.LOW_TEMPERATURE_LOOP, HeatingLoopMode.ON)
+                        hp_api.set_heating_loop_mode(heating_loop, HeatingLoopMode.ON)
                     elif mode == "OFF":
-                        hp_api.set_heating_loop_mode(HeatingLoop.LOW_TEMPERATURE_LOOP, HeatingLoopMode.OFF)
+                        hp_api.set_heating_loop_mode(heating_loop, HeatingLoopMode.OFF)
                     elif mode == "AUTO":
-                        hp_api.set_heating_loop_mode(HeatingLoop.LOW_TEMPERATURE_LOOP, HeatingLoopMode.AUTO)
+                        hp_api.set_heating_loop_mode(heating_loop, HeatingLoopMode.AUTO)
                     else:
                         return_message = {"message": f"Invalid mode {mode}"}
+                        return {"message": f"Invalid mode {mode} for 'set_heating_loop_mode'"}, 404
+                    return_message = {"message": f"Set heating loop {heating_loop.name} mode to {mode}"}
                 else:
                     return_message = {"message": "set-heating-loop-mode arg/s missing"}
             case _:

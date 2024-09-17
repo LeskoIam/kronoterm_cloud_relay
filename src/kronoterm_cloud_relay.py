@@ -25,26 +25,47 @@ def info_summary():
     :return: summary for heating loop 2
     """
     system_review_data = hp_api.get_system_review_data()
-    low_temp_loop_data = hp_api.get_heating_loop_data(HeatingLoop.LOW_TEMPERATURE_LOOP)
+    loop_1_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_1)
+    loop_2_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_2)
+    alarms_data = hp_api.get_alarms_data()["AlarmsData"]
 
     room_temperature = system_review_data["TemperaturesAndConfig"]["heating_circle_2_temp"]
     outlet_temperature = system_review_data["CurrentFunctionData"][0]["dv_temp"]
-    low_temp_target_temp = low_temp_loop_data["HeatingCircleData"]["circle_temp"]
     outside_temperature = system_review_data["TemperaturesAndConfig"]["outside_temp"]
     sanitary_water_temperature = system_review_data["TemperaturesAndConfig"]["tap_water_temp"]
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]
-    working_status = low_temp_loop_data["HeatingCircleData"]["circle_status"]
-    working_mode = low_temp_loop_data["HeatingCircleData"]["circle_mode"]
+
+    heating_loop_1_target_temp = loop_1_data["HeatingCircleData"]["circle_temp"]
+    heating_loop_1_working_status = loop_1_data["HeatingCircleData"]["circle_status"]
+    heating_loop_1_working_mode = loop_1_data["HeatingCircleData"]["circle_mode"]
+
+    heating_loop_2_target_temp = loop_2_data["HeatingCircleData"]["circle_temp"]
+    heating_loop_2_working_status = loop_2_data["HeatingCircleData"]["circle_status"]
+    heating_loop_2_working_mode = loop_2_data["HeatingCircleData"]["circle_mode"]
 
     output = {
-        "room_temperature": room_temperature,
-        "outside_temperature": outside_temperature,
-        "sanitary_water_temperature": sanitary_water_temperature,
-        "outlet_temperature": outlet_temperature,
-        "low_temp_target_temp": low_temp_target_temp,
-        "working_function": WorkingFunction(working_function).name,
-        "working_status": working_status,
-        "working_mode": HeatingLoopMode(working_mode).name,
+        "hp_id": hp_api.hp_id,
+        "location_name": hp_api.location_name,
+        "user_level": hp_api.user_level,
+        "heating_loop_names": hp_api.loop_names,
+        "alarms": alarms_data,
+        "system_info": {
+            "room_temperature": room_temperature,
+            "outlet_temperature": outlet_temperature,
+            "outside_temperature": outside_temperature,
+            "sanitary_water_temperature": sanitary_water_temperature,
+            "working_function": WorkingFunction(working_function).name,
+        },
+        "heating_loop_1": {
+            "heating_loop_1_target_temp": heating_loop_1_target_temp,
+            "heating_loop_1_working_status": heating_loop_1_working_status,
+            "heating_loop_1_working_mode": HeatingLoopMode(heating_loop_1_working_mode).name,
+        },
+        "heating_loop_2": {
+            "heating_loop_2_target_temp": heating_loop_2_target_temp,
+            "heating_loop_2_working_status": heating_loop_2_working_status,
+            "heating_loop_2_working_mode": HeatingLoopMode(heating_loop_2_working_mode).name,
+        },
     }
     return output
 
@@ -78,12 +99,14 @@ class HPInfo(Resource):
             case _:
                 return f"about/{about} not supported", 404
 
+
 parser.add_argument("temperature", type=float)
 parser.add_argument("mode", type=str)
 # HeatingLoop.HEATING_LOOP_1 = 1
 # HeatingLoop.HEATING_LOOP_2 = 2
 # HeatingLoop.TAP_WATER = 3
 parser.add_argument("heating_loop", type=int)
+
 
 class HPController(Resource):
     def post(self, operation):

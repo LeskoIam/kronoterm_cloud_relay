@@ -8,6 +8,10 @@ from flask_restful import Api, Resource, reqparse
 from kronoterm_cloud_api import KronotermCloudApi
 from kronoterm_enums import HeatingLoop, HeatingLoopMode, WorkingFunction
 
+from src.util.logz import create_logger
+
+log = create_logger(__name__)
+
 load_dotenv()
 
 hp_api = KronotermCloudApi(username=os.getenv("KRONOTERM_CLOUD_USER"), password=os.getenv("KRONOTERM_CLOUD_PASSWORD"))

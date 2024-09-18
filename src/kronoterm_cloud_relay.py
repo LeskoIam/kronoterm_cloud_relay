@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 from kronoterm_cloud_api.client import KronotermCloudApi
-from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, WorkingFunction
+from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, WorkingFunction, HeatingLoopStatus
 
-from src.util.logz import create_logger
+from util.logz import create_logger
 
 log = create_logger(__name__)
 
@@ -42,15 +42,19 @@ def info_summary() -> dict:
 
     room_temperature = system_review_data["TemperaturesAndConfig"]["heating_circle_2_temp"]
     outlet_temperature = system_review_data["CurrentFunctionData"][0]["dv_temp"]
+    heating_system_pressure = system_review_data["CurrentFunctionData"][0]["heating_system_pressure"]
     outside_temperature = system_review_data["TemperaturesAndConfig"]["outside_temp"]
     sanitary_water_temperature = system_review_data["TemperaturesAndConfig"]["tap_water_temp"]
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]
 
+    heating_loop_1_current_temp = system_review_data["SystemData"][1]["circle_temp"]
     heating_loop_1_target_temp = loop_1_data["HeatingCircleData"]["circle_temp"]
+    heating_loop_1_calc_target_temp = loop_1_data["HeatingCircleData"]["circle_calc_temp"]
     heating_loop_1_working_status = loop_1_data["HeatingCircleData"]["circle_status"]
     heating_loop_1_working_mode = loop_1_data["HeatingCircleData"]["circle_mode"]
 
     heating_loop_2_target_temp = loop_2_data["HeatingCircleData"]["circle_temp"]
+    heating_loop_2_calc_target_temp = loop_2_data["HeatingCircleData"]["circle_calc_temp"]
     heating_loop_2_working_status = loop_2_data["HeatingCircleData"]["circle_status"]
     heating_loop_2_working_mode = loop_2_data["HeatingCircleData"]["circle_mode"]
 
@@ -65,17 +69,21 @@ def info_summary() -> dict:
             "outlet_temperature": outlet_temperature,
             "outside_temperature": outside_temperature,
             "sanitary_water_temperature": sanitary_water_temperature,
+            "heating_system_pressure": heating_system_pressure,
             "working_function": WorkingFunction(working_function).name,
         },
         "heating_loop_1": {
-            "heating_loop_1_target_temp": heating_loop_1_target_temp,
-            "heating_loop_1_working_status": heating_loop_1_working_status,
-            "heating_loop_1_working_mode": HeatingLoopMode(heating_loop_1_working_mode).name,
+            "current_temp": heating_loop_1_current_temp,
+            "target_temp": heating_loop_1_target_temp,
+            "calc_target_temp": heating_loop_1_calc_target_temp,
+            "working_status": HeatingLoopStatus(heating_loop_1_working_status).name,
+            "working_mode": HeatingLoopMode(heating_loop_1_working_mode).name,
         },
         "heating_loop_2": {
-            "heating_loop_2_target_temp": heating_loop_2_target_temp,
-            "heating_loop_2_working_status": heating_loop_2_working_status,
-            "heating_loop_2_working_mode": HeatingLoopMode(heating_loop_2_working_mode).name,
+            "target_temp": heating_loop_2_target_temp,
+            "calc_target_temp": heating_loop_2_calc_target_temp,
+            "working_status": HeatingLoopStatus(heating_loop_2_working_status).name,
+            "working_mode": HeatingLoopMode(heating_loop_2_working_mode).name,
         },
     }
     return output

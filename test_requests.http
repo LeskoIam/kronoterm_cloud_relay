@@ -1,38 +1,38 @@
 ## Relay
 ### Version
-GET http://localhost:5000/version
+GET http://localhost:8555/version
 
 ### Echo
-GET http://localhost:5000/relay/echo/test
+GET http://localhost:8555/relay/echo/test
 
 ## hp_info
 ### info_summary
-GET http://localhost:5000/hp_info/info_summary
+GET http://localhost:8555/hp_info/info_summary
 
 ### initial_data
-GET http://localhost:5000/hp_info/initial_data
+GET http://localhost:8555/hp_info/initial_data
 
 ### basic_data
-GET http://localhost:5000/hp_info/basic_data
+GET http://localhost:8555/hp_info/basic_data
 
 ### system_review
-GET http://localhost:5000/hp_info/system_review
+GET http://localhost:8555/hp_info/system_review
 
 ### heat_loop[1]
-GET http://localhost:5000/hp_info/heating_loop/1
+GET http://localhost:8555/hp_info/heating_loop/1
 
 ### heat_loop[2]
-GET http://localhost:5000/hp_info/heating_loop/2
+GET http://localhost:8555/hp_info/heating_loop/2
 
 ### heat_loop[5]
-GET http://localhost:5000/hp_info/heating_loop/5
+GET http://localhost:8555/hp_info/heating_loop/5
 
 ### alarms
-GET http://localhost:5000/hp_info/alarms
+GET http://localhost:8555/hp_info/alarms
 
 ## hp_control
 ### set_heating_loop_mode[1]
-POST http://localhost:5000/hp_control/set_heating_loop_mode
+POST http://localhost:8555/hp_control/set_heating_loop_mode
 Content-Type: application/json
 
 {
@@ -41,7 +41,7 @@ Content-Type: application/json
 }
 
 ### set_heating_loop_mode[2]
-POST http://localhost:5000/hp_control/set_heating_loop_mode
+POST http://localhost:8555/hp_control/set_heating_loop_mode
 Content-Type: application/json
 
 {
@@ -50,7 +50,7 @@ Content-Type: application/json
 }
 
 ### set_heating_loop_mode[3]
-POST http://localhost:5000/hp_control/set_heating_loop_mode
+POST http://localhost:8555/hp_control/set_heating_loop_mode
 Content-Type: application/json
 
 {
@@ -59,7 +59,7 @@ Content-Type: application/json
 }
 
 ### set_target_temperature[1]
-POST http://localhost:5000/hp_control/set_target_temperature
+POST http://localhost:8555/hp_control/set_target_temperature
 Content-Type: application/json
 
 {
@@ -68,16 +68,16 @@ Content-Type: application/json
 }
 
 ### set_target_temperature[2]
-POST http://localhost:5000/hp_control/set_target_temperature
+POST http://localhost:8555/hp_control/set_target_temperature
 Content-Type: application/json
 
 {
-  "temperature": 23,
+  "temperature": 22,
   "heating_loop": 2
 }
 
 ### set_target_temperature[3]
-POST http://localhost:5000/hp_control/set_target_temperature
+POST http://localhost:8555/hp_control/set_target_temperature
 Content-Type: application/json
 
 {

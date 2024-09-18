@@ -20,13 +20,20 @@ hp_api.update_heat_pump_basic_information()
 
 app = Flask(__name__)
 api = Api(app)
+
 parser = reqparse.RequestParser()
+parser.add_argument("temperature", type=float)
+parser.add_argument("mode", type=str)
+# HeatingLoop.HEATING_LOOP_1 = 1
+# HeatingLoop.HEATING_LOOP_2 = 2
+# HeatingLoop.TAP_WATER = 3
+parser.add_argument("heating_loop", type=int)
 
 
-def info_summary():
-    """Heating loop 2 summary.
+def info_summary() -> dict:
+    """Summary.
 
-    :return: summary for heating loop 2
+    :return: summary
     """
     system_review_data = hp_api.get_system_review_data()
     loop_1_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_1)
@@ -75,46 +82,40 @@ def info_summary():
 
 
 class HPInfo(Resource):
-    def get(self, about):  # noqa: C901
-        """Get heat pump data based on `about` argument"""
+    def get(self, about, heating_loop=None):
+        """Get heat pump data based on `about` argument.
+
+        hp_info
+        /hp_info/<string:about>
+        """
+        if heating_loop is not None and heating_loop not in HeatingLoop:
+            return {"message": f"Heating loop '{heating_loop}' not supported"}, 404
         match about:
             case "info_summary":
-                return info_summary()
-            case "heat_loop_2":
-                return {"data": hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_2)}
+                return {"data": info_summary()}
+            case "initial_data":
+                return {"data": hp_api.get_initial_data()}
+            case "basic_data":
+                return {"data": hp_api.get_basic_data()}
             case "system_review":
                 return {"data": hp_api.get_system_review_data()}
-            case "target_temperature":
-                return {"data": hp_api.get_heating_loop_target_temperature(HeatingLoop.HEATING_LOOP_2)}
-            case "room_temperature":
-                return {"data": hp_api.get_room_temp()}
-            case "outside_temperature":
-                return {"data": hp_api.get_outside_temperature()}
-            case "outlet_temperature":
-                return {"data": hp_api.get_outlet_temp()}
-            case "working_function":
-                return {"data": hp_api.get_working_function().name}
-            case "working_status":
-                return {"data": hp_api.get_heating_loop_status(HeatingLoop.HEATING_LOOP_2)}
-            case "working_mode":
-                return {"data": hp_api.get_heating_loop_mode(HeatingLoop.HEATING_LOOP_2).name}
-            case "water_temperature":
-                return {"data": hp_api.get_sanitary_water_temp()}
+            case "heating_loop":
+                heating_loop = HeatingLoop(heating_loop)
+                return {"data": hp_api.get_heating_loop_data(heating_loop)}
+            case "alarms":
+                return {"data": hp_api.get_alarms_data()}
             case _:
-                return f"about/{about} not supported", 404
-
-
-parser.add_argument("temperature", type=float)
-parser.add_argument("mode", type=str)
-# HeatingLoop.HEATING_LOOP_1 = 1
-# HeatingLoop.HEATING_LOOP_2 = 2
-# HeatingLoop.TAP_WATER = 3
-parser.add_argument("heating_loop", type=int)
+                return f"hp_info/{about} not supported", 404
 
 
 class HPController(Resource):
     def post(self, operation):
-        """Set heat pump temperature and operation mode"""
+        """Set heat pump temperature and operation mode.
+
+        hp_control
+        /hp_control/<string:operation>/
+        payload = {"heating_loop": kronoterm_enums.HeatingLoop.value}
+        """
         args = parser.parse_args()
         heating_loop = args.get("heating_loop")
         if heating_loop not in HeatingLoop:
@@ -125,7 +126,7 @@ class HPController(Resource):
                 temp = args.get("temperature")
                 if temp is not None:
                     hp_api.set_heating_loop_target_temperature(heating_loop, temp)
-                    return_message = {"message": f"Set temperature of '{heating_loop.name}' to {temp} degrees Celsius"}
+                    return {"message": f"Set temperature of '{heating_loop.name}' to {temp} degrees Celsius"}
                 else:
                     return {"message": "set-temperature arg/s missing"}, 404
 
@@ -141,45 +142,47 @@ class HPController(Resource):
                         hp_api.set_heating_loop_mode(heating_loop, HeatingLoopMode.AUTO)
                     else:
                         return {"message": f"Invalid mode {mode} for 'set_heating_loop_mode'"}, 404
-                    return_message = {"message": f"Set heating loop {heating_loop.name} mode to {mode}"}
+                    return {"message": f"Set heating loop {heating_loop.name} mode to {mode}"}
                 else:
                     return {"message": "'mode' not set"}, 404
             case _:
                 return {"message": f"'{operation}': Invalid operation"}, 404
-        return return_message, 200
 
 
 class RelayController(Resource):
-    def get(self, operation):
+    def get(self, operation, optional=None):
         """Healthcheck endpoint"""
-        return_message = {"message": f"relay - echo '{operation}' - OK"}
-        return return_message, 200
+        match operation:
+            case "echo":
+                return {"message": f"relay - echo '{optional}' - OK"}, 200
+            case _:
+                return {"message": f"{operation}: Invalid operation"}, 404
 
-    def post(self, operation):
+    def post(self, operation, optional=None):
         """Relay control and status"""
         match operation:
             case "login":
                 hp_api.login()
-                return_message = {"message": "Login successful"}
+                return {"message": "Login successful"}
+            case "refresh_basic_info":
+                hp_api.update_heat_pump_basic_information()
+                return {"message": "Refresh successful"}
             case _:
                 return {"message": f"{operation}: Invalid operation"}, 404
-
-        return return_message, 200
 
 
 class RelayControllerVersion(Resource):
     def get(self):
         """Return current version"""
-        return_message = {"version": __version__}
-        return return_message, 200
+        return {"version": __version__}
 
 
 ## Actually set up the API resource routing here
-api.add_resource(HPInfo, "/hp-info/<about>")
-api.add_resource(HPController, "/hp-control/<operation>")
+api.add_resource(HPInfo, "/hp_info/<string:about>", "/hp_info/<string:about>/<int:heating_loop>")
+api.add_resource(HPController, "/hp_control/<string:operation>")
 
 api.add_resource(RelayControllerVersion, "/version")
-api.add_resource(RelayController, "/relay/<operation>")
+api.add_resource(RelayController, "/relay/<string:operation>/", "/relay/<string:operation>/<optional>")
 
 
 if __name__ == "__main__":

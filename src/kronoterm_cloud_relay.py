@@ -5,8 +5,8 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
-from kronoterm_cloud_api import KronotermCloudApi
-from kronoterm_enums import HeatingLoop, HeatingLoopMode, WorkingFunction
+from kronoterm_cloud_api.client import KronotermCloudApi
+from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, WorkingFunction
 
 from src.util.logz import create_logger
 
@@ -26,7 +26,7 @@ parser.add_argument("temperature", type=float)
 parser.add_argument("mode", type=str)
 # HeatingLoop.HEATING_LOOP_1 = 1
 # HeatingLoop.HEATING_LOOP_2 = 2
-# HeatingLoop.TAP_WATER = 3
+# HeatingLoop.TAP_WATER = 5
 parser.add_argument("heating_loop", type=int)
 
 
@@ -101,6 +101,7 @@ class HPInfo(Resource):
                 return {"data": hp_api.get_system_review_data()}
             case "heating_loop":
                 heating_loop = HeatingLoop(heating_loop)
+                log.info("heating loop data for %s", heating_loop)
                 return {"data": hp_api.get_heating_loop_data(heating_loop)}
             case "alarms":
                 return {"data": hp_api.get_alarms_data()}

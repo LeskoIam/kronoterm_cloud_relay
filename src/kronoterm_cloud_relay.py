@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
 from kronoterm_cloud_api.client import KronotermCloudApi
-from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, WorkingFunction, HeatingLoopStatus
+from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, HeatingLoopStatus, WorkingFunction
 
 from util.logz import create_logger
 
@@ -40,21 +40,21 @@ def info_summary() -> dict:
     loop_2_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_2)
     alarms_data = hp_api.get_alarms_data()["AlarmsData"]
 
-    room_temperature = system_review_data["TemperaturesAndConfig"]["heating_circle_2_temp"]
-    outlet_temperature = system_review_data["CurrentFunctionData"][0]["dv_temp"]
-    heating_system_pressure = system_review_data["CurrentFunctionData"][0]["heating_system_pressure"]
-    outside_temperature = system_review_data["TemperaturesAndConfig"]["outside_temp"]
-    sanitary_water_temperature = system_review_data["TemperaturesAndConfig"]["tap_water_temp"]
+    room_temperature = float(system_review_data["TemperaturesAndConfig"]["heating_circle_2_temp"])
+    outlet_temperature = float(system_review_data["CurrentFunctionData"][0]["dv_temp"])
+    heating_system_pressure = float(system_review_data["CurrentFunctionData"][0]["heating_system_pressure"])
+    outside_temperature = float(system_review_data["TemperaturesAndConfig"]["outside_temp"])
+    sanitary_water_temperature = float(system_review_data["TemperaturesAndConfig"]["tap_water_temp"])
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]
 
-    heating_loop_1_current_temp = system_review_data["SystemData"][1]["circle_temp"]
-    heating_loop_1_target_temp = loop_1_data["HeatingCircleData"]["circle_temp"]
-    heating_loop_1_calc_target_temp = loop_1_data["HeatingCircleData"]["circle_calc_temp"]
+    heating_loop_1_current_temp = float(system_review_data["SystemData"][1]["circle_temp"])
+    heating_loop_1_target_temp = float(loop_1_data["HeatingCircleData"]["circle_temp"])
+    heating_loop_1_calc_target_temp = float(loop_1_data["HeatingCircleData"]["circle_calc_temp"])
     heating_loop_1_working_status = loop_1_data["HeatingCircleData"]["circle_status"]
     heating_loop_1_working_mode = loop_1_data["HeatingCircleData"]["circle_mode"]
 
-    heating_loop_2_target_temp = loop_2_data["HeatingCircleData"]["circle_temp"]
-    heating_loop_2_calc_target_temp = loop_2_data["HeatingCircleData"]["circle_calc_temp"]
+    heating_loop_2_target_temp = float(loop_2_data["HeatingCircleData"]["circle_temp"])
+    heating_loop_2_calc_target_temp = float(loop_2_data["HeatingCircleData"]["circle_calc_temp"])
     heating_loop_2_working_status = loop_2_data["HeatingCircleData"]["circle_status"]
     heating_loop_2_working_mode = loop_2_data["HeatingCircleData"]["circle_mode"]
 

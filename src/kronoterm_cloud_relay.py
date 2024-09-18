@@ -137,7 +137,10 @@ class HPController(Resource):
                 temp = args.get("temperature")
                 if temp is not None:
                     hp_api.set_heating_loop_target_temperature(heating_loop, temp)
-                    return {"message": f"Set temperature of '{heating_loop.name}' to {temp} degrees Celsius"}
+                    return {
+                        "message": f"Set temperature of '{heating_loop.name}' to {temp} degrees Celsius",
+                        "telemetry_check": hp_api.get_heating_loop_target_temperature(heating_loop) == temp,
+                    }
                 else:
                     return {"message": "set-temperature arg/s missing"}, 404
 

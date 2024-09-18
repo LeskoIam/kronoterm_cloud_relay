@@ -96,7 +96,8 @@ class HPInfo(Resource):
         hp_info
         /hp_info/<string:about>
         """
-        if heating_loop is not None and heating_loop not in HeatingLoop:
+        values = set(item.value for item in HeatingLoop)  # WA
+        if heating_loop is not None and heating_loop not in values:
             return {"message": f"Heating loop '{heating_loop}' not supported"}, 404
         match about:
             case "info_summary":
@@ -127,7 +128,8 @@ class HPController(Resource):
         """
         args = parser.parse_args()
         heating_loop = args.get("heating_loop")
-        if heating_loop not in HeatingLoop:
+        values = set(item.value for item in HeatingLoop)  # WA
+        if heating_loop not in values:
             return {"message": f"Heating loop '{heating_loop}' not supported"}, 404
         heating_loop = HeatingLoop(heating_loop)
         match operation:

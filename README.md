@@ -15,8 +15,8 @@ Relay server for [Kronoterm](https://kronoterm.com//) cloud. It gets data from c
    ```
    Open file in your favorite text editor and add the following content
    ```dotenv
-   KRONOTERM_CLOUD_USER=your-user
-   KRONOTERM_CLOUD_PASSWORD=your-password
+   KRONOTERM_CLOUD_USER="your-user"
+   KRONOTERM_CLOUD_PASSWORD="your-password"
    ```
 5. [optional] Create and activate python venv,
    ```shell

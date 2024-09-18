@@ -55,7 +55,7 @@ return should be the current version of kronoterm-cloud-relay
 ```
 or
 
-`ip-or-host-address:8555/relay/is_it_working`
+`ip-or-host-address:8555/relay/echo/is_it_working`
 
 return should be whatever the last argument is, in this case `is_it_working`
 ```python
@@ -63,25 +63,25 @@ return should be whatever the last argument is, in this case `is_it_working`
 ```
 
 #### Home Assistant uses this one to avoid multiple API calls
-- `http://ip-or-host-address:8555/hp-info/info_summary`
+- `http://ip-or-host-address:8555/hp_info/info_summary`
 
 ### Some currently supported endpoints
 #### Get data from heat pump (cloud)
 Method: `GET`
-- `http://ip-or-host-address:8555/hp-info/heat_loop_2`
-- `http://ip-or-host-address:8555/hp-info/system_review`
-- `http://ip-or-host-address:8555/hp-info/target_temperature`
-- `http://ip-or-host-address:8555/hp-info/room_temperature`
-- `http://ip-or-host-address:8555/hp-info/outside_temperature`
-- `http://ip-or-host-address:8555/hp-info/working_function`
-- `http://ip-or-host-address:8555/hp-info/working_status`
-- `http://ip-or-host-address:8555/hp-info/working_mode`
-- `http://ip-or-host-address:8555/hp-info/water_temperature`
+- `http://ip-or-host-address:8555/hp_info/heat_loop_2`
+- `http://ip-or-host-address:8555/hp_info/system_review`
+- `http://ip-or-host-address:8555/hp_info/target_temperature`
+- `http://ip-or-host-address:8555/hp_info/room_temperature`
+- `http://ip-or-host-address:8555/hp_info/outside_temperature`
+- `http://ip-or-host-address:8555/hp_info/working_function`
+- `http://ip-or-host-address:8555/hp_info/working_status`
+- `http://ip-or-host-address:8555/hp_info/working_mode`
+- `http://ip-or-host-address:8555/hp_info/water_temperature`
 #### Set heat pump configuration
 Method: `POST`
-- http://ip-or-host-address:8555/hp-control/set_temperature
+- http://ip-or-host-address:8555/hp_control/set_temperature
   - payload = `{"temperature": "24.5" }`
-- http://ip-or-host-address:8555/hp-control/set_heating_loop_mode
+- http://ip-or-host-address:8555/hp_control/set_heating_loop_mode
   - payload = `{"mode": "AUTO"}`
   - payload = `{"mode": "ON"}`
   - payload = `{"mode": "OFF"}`

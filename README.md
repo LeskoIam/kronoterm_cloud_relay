@@ -68,23 +68,25 @@ return should be whatever the last argument is, in this case `is_it_working`
 ### Some currently supported endpoints
 #### Get data from heat pump (cloud)
 Method: `GET`
-- `http://ip-or-host-address:8555/hp_info/heat_loop_2`
+- `http://ip-or-host-address:8555/hp_info/initial_data`
+- `http://ip-or-host-address:8555/hp_info/basic_data`
 - `http://ip-or-host-address:8555/hp_info/system_review`
-- `http://ip-or-host-address:8555/hp_info/target_temperature`
-- `http://ip-or-host-address:8555/hp_info/room_temperature`
-- `http://ip-or-host-address:8555/hp_info/outside_temperature`
-- `http://ip-or-host-address:8555/hp_info/working_function`
-- `http://ip-or-host-address:8555/hp_info/working_status`
-- `http://ip-or-host-address:8555/hp_info/working_mode`
-- `http://ip-or-host-address:8555/hp_info/water_temperature`
+- `http://ip-or-host-address:8555/hp_info/heating_loop/<heating_loop_number>`
+  - `<heating_loop_number>`
+    - heating loop 1: `1`
+    - heating loop 2: `2`
+    - sanitary water (heating loop 5): `5`
+- `http://ip-or-host-address:8555/hp_info/alarms`
 #### Set heat pump configuration
 Method: `POST`
-- http://ip-or-host-address:8555/hp_control/set_temperature
-  - payload = `{"temperature": "24.5" }`
+- http://ip-or-host-address:8555/hp_control/set_target_temperature
+  - payload = `{"temperature": "24.5", "heating_loop": 1}`
+  - payload = `{"temperature": "24.5", "heating_loop": 2}`
+  - payload = `{"temperature": "24.5", "heating_loop": 5}`
 - http://ip-or-host-address:8555/hp_control/set_heating_loop_mode
-  - payload = `{"mode": "AUTO"}`
-  - payload = `{"mode": "ON"}`
-  - payload = `{"mode": "OFF"}`
+  - payload = `{"mode": "AUTO", "heating_loop" : 1}`
+  - payload = `{"mode": "ON", "heating_loop" : 1}`
+  - payload = `{"mode": "OFF", "heating_loop" : 1}`
 
 
 ## Usage with [Home Assistant](https://www.home-assistant.io/)

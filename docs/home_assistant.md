@@ -8,180 +8,174 @@ If you are using hostnames for addressing you network devices I would advise to 
 I found out the hard way if using hostnames sensors go to `unknown` or `unavailable` state. 
 
 ```yaml
-sensor:
-  - platform: rest
-    name: "Heat pump room temperature"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/room_temperature
-    method: GET
-    value_template: "{{ value_json.data }}"
-    unit_of_measurement: '°C'
-    device_class: temperature
-    state_class: measurement
-    timeout: 20
-    scan_interval: 60
-    
-  - platform: rest
-    name: "Heat pump outlet temperature"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/outlet_temperature
-    method: GET
-    value_template: "{{ value_json.data }}"
-    unit_of_measurement: '°C'
-    device_class: temperature
-    state_class: measurement
-    timeout: 20
-    scan_interval: 60
-    
-  - platform: rest
-    name: "Heat pump set room temperature"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/set_temperature
-    method: GET
-    value_template: "{{ value_json.data }}"
-    unit_of_measurement: '°C'
-    device_class: temperature
-    state_class: measurement
-    timeout: 20
-    scan_interval: 60
-    
-  - platform: rest
-    name: "Heat pump outside temperature"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/outside_temperature
-    method: GET
-    value_template: "{{ value_json.data }}"
-    unit_of_measurement: '°C'
-    device_class: temperature
-    state_class: measurement
-    timeout: 20
-    scan_interval: 60
-    
-  - platform: rest
-    name: "Sanitary water temperature"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/water_temperature
-    method: GET
-    value_template: "{{ value_json.data }}"
-    unit_of_measurement: '°C'
-    device_class: temperature
-    state_class: measurement
-    timeout: 20
-    scan_interval: 60
-    
-  - platform: rest
-    name: "Heat pump working function"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/working_function
-    method: GET
-    value_template: "{{ value_json.data }}"
-    timeout: 20
-    scan_interval: 60
-    
-  - platform: rest
-    name: "Heat pump working status"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/working_status
-    method: GET
-    value_template: "{{ value_json.data }}"
-    timeout: 20
-    scan_interval: 60
-    
-  - platform: rest
-    name: "Heat pump working mode"
-    unique_id: generate-your-own-unique-id
-    resource: http://your-relay-host:8555/hp_info/working_mode
-    method: GET
-    value_template: "{{ value_json.data }}"
-    timeout: 20
-    scan_interval: 60
-  
-  - platform: rest
-    name: Heat pump low temperature loop
-    unique_id: generate-your-own-unique-id
-    scan_interval: 60
-    resource: http://your-relay-host:8555/hp_info/info_summary
-    value_template: "{{ value_json.working_status }}"
-    json_attributes:
-      - room_temperature
-      - outside_temperature
-      - sanitary_water_temperature
-      - outlet_temperature
-      - low_temp_target_temp
-      - working_function
-      - working_status
-      - working_mode
-
-rest_command:
-  hp_set_mode_on:
-    url: http://your-relay-host:8555/hp_control/set_heating_loop_mode
-    method: POST
-    payload: '{"mode": "ON"}'
-    content_type: 'application/json'
-  hp_set_mode_off:
-    url: http://your-relay-host:8555/hp_control/set_heating_loop_mode
-    method: POST
-    payload: '{"mode": "OFF"}'
-    content_type: 'application/json'
-  hp_set_mode_auto:
-    url: http://your-relay-host:8555/hp_control/set_heating_loop_mode
-    method: POST
-    payload: '{"mode": "AUTO"}'
-    content_type: 'application/json'
-  hp_set_temperature:
-    url: http://your-relay-host:8555/hp_control/set_temperature
-    method: POST
-    payload: '{"temperature": "{{ set_temp }}" }'
-    content_type: 'application/json'
+# Main sensor with all the data
+- platform: rest
+  name: Kronoterm heat pump
+  unique_id: kronoterm_heat_pump
+  scan_interval: 60
+  resource: http://ip-or-host:8555/hp_info/info_summary
+  value_template: "{{ value_json.data.system_info.working_function }}"
+  json_attributes_path: '$.data'
+  json_attributes:
+    - hp_id
+    - location_name
+    - user_level
+    - heating_loop_names
+    - alarms
+    - system_info
+    - heating_loop_1
+    - heating_loop_2
 ```
+
 #### Creating template sensors from `Heat pump low temperature loop` attribute data
 ```yaml
-###############
-## HEAT PUMP ##
-###############
 - sensor:
+  # System info
+  - name: "Heat pump id"
+    unique_id: heat_pump_id
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'hp_id') }}"
+   
+  - name: "Heat pump location name"
+    unique_id: heat_pump_location_name
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'location_name') }}"
+    
   - name: "Heat pump room temperature"
-    unique_id: 6e2d97a6-f2be-43dd-a389-91daf602fa20
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'room_temperature') }}"
+    unique_id: heat_pump_room_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').room_temperature }}"
     unit_of_measurement: °C
     device_class: temperature
     state_class: measurement
+
   - name: "Heat pump outlet temperature"
-    unique_id: 19451526-f813-43a3-88bd-823b1ea464fb
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'outlet_temperature') }}"
+    unique_id: heat_pump_outlet_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').outlet_temperature }}"
     unit_of_measurement: °C
     device_class: temperature
     state_class: measurement
-  - name: "Heat pump configured room temperature"
-    unique_id: 479e8ee1-5dce-4ffb-9339-57c65211634c
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'low_temp_target_temp') }}"
-    unit_of_measurement: °C
-    device_class: temperature
-    state_class: measurement
+
   - name: "Heat pump outside temperature"
-    unique_id: 3316cf5a-6ecf-4c18-8821-69a58fd57ac7
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'outside_temperature') }}"
+    unique_id: heat_pump_outside_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').outside_temperature }}"
     unit_of_measurement: °C
     device_class: temperature
     state_class: measurement
+    
   - name: "Sanitary water temperature"
-    unique_id: 12fa0800-577f-4230-a9f9-f5fad8f6b26a
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'sanitary_water_temperature') }}"
+    unique_id: sanitary_water_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').sanitary_water_temperature }}"
     unit_of_measurement: °C
     device_class: temperature
     state_class: measurement
+  
+  - name: "Heating system pressure"
+    unique_id: heat_pump_heating_system_pressure
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').heating_system_pressure }}"
+    unit_of_measurement: bar
+    device_class: pressure
+    state_class: measurement
+
   - name: "Heat pump working function"
-    unique_id: 4997f71d-eb60-43d9-a3c0-e1df2e721f24
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'working_function') }}"
-  - name: "Heat pump working status"
-    unique_id: 9f725bb6-6be6-407f-8cb0-e755f7c1797c
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'working_status') }}"
-  - name: "Heat pump working mode"
-    unique_id: 26b86176-853e-4829-aa9e-c1f0aaa86905
-    state: "{{ state_attr('sensor.heat_pump_low_temperature_loop', 'working_mode') }}"
+    unique_id: heat_pump_working_function
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').working_function }}"
+  
+  # Heating loop 1 (radiators)
+  - name: "Heat pump loop 1 current temperature"
+    unique_id: heating_loop_1_current_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_1').current_temp }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  
+  - name: "Heat pump loop 1 target temperature"
+    unique_id: heating_loop_1_target_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_1').target_temp }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  
+  - name: "Heat pump loop 1 calculated target temperature"
+    unique_id: heating_loop_1_calculated_target_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_1').calc_target_temp }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+
+  - name: "Heat pump loop 1 working status"
+    unique_id: heating_loop_1_working_status
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_1').working_status }}"
+  
+  - name: "Heat pump loop 1 working mode"
+    unique_id: heating_loop_1_working_mode
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_1').working_mode }}"
+  
+  # Heating loop 2 (radiators)
+  - name: "Heat pump loop 2 target temperature"
+    unique_id: heating_loop_2_target_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_2').target_temp }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  
+  - name: "Heat pump loop 2 calculated target temperature"
+    unique_id: heating_loop_2_calculated_target_temperature
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_2').calc_target_temp }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+
+  - name: "Heat pump loop 2 working status"
+    unique_id: heating_loop_2_working_status
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_2').working_status }}"
+  
+  - name: "Heat pump loop 2 working mode"
+    unique_id: heating_loop_2_working_mode
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_2').working_mode }}"
 ```
+### REST commands for heat pump configuration
+```yaml
+rest_command:
+  hp_set_mode_loop_1_on:
+    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "ON", "heating_loop": 1}'
+    content_type: 'application/json'
+  hp_set_mode_loop_1_off:
+    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "OFF", "heating_loop": 1}'
+    content_type: 'application/json'
+  hp_set_mode_loop_1_auto:
+    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "AUTO", "heating_loop": 1}'
+    content_type: 'application/json'
+    
+  hp_set_mode_loop_2_on:
+    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "ON", "heating_loop": 2}'
+    content_type: 'application/json'
+  hp_set_mode_loop_2_off:
+    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "OFF", "heating_loop": 2}'
+    content_type: 'application/json'
+  hp_set_mode_loop_2_auto:
+    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    method: POST
+    payload: '{"mode": "AUTO", "heating_loop": 2}'
+    content_type: 'application/json'
+  
+  hp_set_temperature:
+    url: http://ip-or-host:8555/hp_control/set_target_temperature
+    method: POST
+    payload: '{"temperature": "{{ set_temp }}", "heating_loop": 2}'
+    content_type: 'application/json'
+```
+
 ### Automation to sync it to `input_number` helper
 
+You must have a helper `input_number.heat_pump_set_temperature` defined.
 ```yaml
 alias: HP_set_room_temperature
 description: >-

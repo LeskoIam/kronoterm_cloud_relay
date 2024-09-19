@@ -200,4 +200,4 @@ api.add_resource(RelayController, "/relay/<string:operation>/", "/relay/<string:
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

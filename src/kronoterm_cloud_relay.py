@@ -39,6 +39,7 @@ def info_summary() -> dict:
     loop_1_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_1)
     loop_2_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_2)
     alarms_data = hp_api.get_alarms_data()["AlarmsData"]
+    power_consumption_data = hp_api.get_theoretical_power_consumption()
 
     room_temperature = float(system_review_data["TemperaturesAndConfig"]["heating_circle_2_temp"])
     outlet_temperature = float(system_review_data["CurrentFunctionData"][0]["dv_temp"])
@@ -73,6 +74,11 @@ def info_summary() -> dict:
             "sanitary_water_temperature": sanitary_water_temperature,
             "heating_system_pressure": heating_system_pressure,
             "working_function": WorkingFunction(working_function).name,
+            "power_consumption_heating": power_consumption_data.heating,
+            "power_consumption_cooling": power_consumption_data.cooling,
+            "power_consumption_tap_water": power_consumption_data.tap_water,
+            "power_consumption_pumps": power_consumption_data.pumps,
+            "power_consumption_total": power_consumption_data.all,
         },
         "heating_loop_1": {
             "current_temp": heating_loop_1_current_temp,

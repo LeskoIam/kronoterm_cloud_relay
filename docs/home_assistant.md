@@ -78,6 +78,41 @@ I found out the hard way if using hostnames sensors go to `unknown` or `unavaila
     unique_id: heat_pump_working_function
     state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').working_function }}"
   
+  - name: "Heat pump power consumption heating"
+    unique_id: heat_pump_power_consumption_heating
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').power_consumption_heating }}"
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+  
+  - name: "Heat pump power consumption cooling"
+    unique_id: heat_pump_power_consumption_cooling
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').power_consumption_cooling }}"
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+  
+  - name: "Heat pump power consumption tap water"
+    unique_id: heat_pump_power_consumption_tap_water
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').power_consumption_tap_water }}"
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    
+  - name: "Heat pump power consumption pumps"
+    unique_id: heat_pump_power_consumption_pumps
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').power_consumption_pumps }}"
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+  
+  - name: "Heat pump power consumption total"
+    unique_id: heat_pump_power_consumption_total
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'system_info').power_consumption_total }}"
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+  
   # Heating loop 1 (radiators)
   - name: "Heat pump loop 1 current temperature"
     unique_id: heating_loop_1_current_temperature
@@ -108,7 +143,7 @@ I found out the hard way if using hostnames sensors go to `unknown` or `unavaila
     unique_id: heating_loop_1_working_mode
     state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_1').working_mode }}"
   
-  # Heating loop 2 (radiators)
+  # Heating loop 2 (convectors)
   - name: "Heat pump loop 2 target temperature"
     unique_id: heating_loop_2_target_temperature
     state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_2').target_temp }}"

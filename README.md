@@ -51,7 +51,7 @@ With your favorite browser navigate to
 
 return should be the current version of kronoterm-cloud-relay
 ```python
-{"version": "0.0.6"}
+{"version": "0.0.7"}
 ```
 or
 

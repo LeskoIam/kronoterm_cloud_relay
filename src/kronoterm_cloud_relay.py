@@ -1,5 +1,6 @@
 __version__ = "0.0.6"
 
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -8,9 +9,7 @@ from flask_restful import Api, Resource, reqparse
 from kronoterm_cloud_api.client import KronotermCloudApi
 from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, HeatingLoopStatus, WorkingFunction
 
-from util.logz import create_logger
-
-log = create_logger(__name__)
+log = logging.getLogger(__name__)
 
 load_dotenv()
 

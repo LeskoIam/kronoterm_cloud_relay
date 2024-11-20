@@ -9,8 +9,6 @@ On your host system that has [Docker](https://www.docker.com/) installed create 
 file with following content. 
 > Update file with your username and password!
 ```yaml
-version: '3.8'
-
 services:
   kronoterm_cloud_relay:
     image: leskoiam/kronoterm_cloud_relay:latest
@@ -20,8 +18,8 @@ services:
       - "8555:8555"  # Adjust the port mappings as needed
     environment:
       # Add your kronoterm cloud username and password
-      - KRONOTERM_CLOUD_USER="your-user"
-      - KRONOTERM_CLOUD_PASSWORD="your-password"
+      - KRONOTERM_CLOUD_USER=your-user
+      - KRONOTERM_CLOUD_PASSWORD=your-password
 ```
 Spin up the image
 ```shell
@@ -78,25 +76,13 @@ Home Assistant has [REST](https://www.home-assistant.io/integrations/rest) integ
 
 Refer to [Home Assistant Readme](./docs/home_assistant.md) for details.
 
-
 ## Debugging
+Tail container logs:
+```shell
+docker logs -f kronoterm_cloud_relay
+```
+Shut down container:
+```shell
+docker compose down kronoterm_cloud_relay
+```
 
-   Because we started the `relay` app in the background there is no output to `stdout`. It has been redirected into
-   `nohup.out`,
-   ```shell
-   tail nohup.out
-   # or
-   tail -f nohup.out  # CTRL-C to exit
-   ```
-   to kill the process (app), first find the PID (process ID) of `relay` server,
-   ```shell
-   ps aux | grep python
-   ```
-   it should output a few lines, we are looking for the one similar to this,
-   ```shell
-   user      <<8764>> 96.3  4.9  29384 21800 pts/0    R    17:39   0:04 /home/***/***/kronoterm_cloud_relay/.venv/bin/python /home/***/***/kronoterm_cloud_relay/.venv/bin/flask --app kronoterm_cloud_relay --debug run --host=0.0.0.0 --port=8555
-   ```
-   number in \<\<<number\>\> is PID, kill the process
-   ```shell
-   kill 8764
-   ```

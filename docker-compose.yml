@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   kronoterm_cloud_relay:
     image: leskoiam/kronoterm_cloud_relay:latest

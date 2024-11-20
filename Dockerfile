@@ -17,7 +17,7 @@ COPY ./README.md /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-
+RUN pip install --no-cache-dir pyopenssl
 # Make port 8555 available to the world outside this container
 EXPOSE 8555
 
@@ -25,4 +25,4 @@ EXPOSE 8555
 ENV FLASK_APP=src/kronoterm_cloud_relay.py
 
 # Run app.py when the container launches
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8555"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8555", "--cert=adhoc"]

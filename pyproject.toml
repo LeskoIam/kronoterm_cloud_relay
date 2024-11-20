@@ -54,6 +54,11 @@ push = true
 "README.md" = [
     '{"version": "{version}"}'
 ]
+"docker_release.bat" = [
+    'docker build -t leskoiam/kronoterm_cloud_relay:{version} .',
+    'docker tag leskoiam/kronoterm_cloud_relay:{version} leskoiam/kronoterm_cloud_relay:latest',
+    'docker push leskoiam/kronoterm_cloud_relay:{version}'
+]
 
 
 [tool.ruff]

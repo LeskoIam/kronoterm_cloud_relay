@@ -4,45 +4,29 @@
 Relay server for [Kronoterm](https://kronoterm.com//) cloud. It gets data from cloud and exposes it through REST API to local network. 
 
 ## Install and run relay
-> **_NOTE:_**  Change `python` to `python3` if necessary. Change PORT if needed, assuming 8555 here.
-### Debian (Ubuntu, mint, ...)
-1. Clone or download the [repo](https://github.com/LeskoIam/kronoterm_cloud_relay),
-2. `git clone https://github.com/LeskoIam/kronoterm_cloud_relay.git` *or* download and extract,
-3. `cd kronoterm_cloud_relay` to change directory to cloned/extracted,
-4. Create `.env` file in `kronoterm_cloud_relay` directory with cloud user and password,
-   ```shell
-   touch .env
-   ```
-   Open file in your favorite text editor and add the following content
-   ```dotenv
-   KRONOTERM_CLOUD_USER="your-user"
-   KRONOTERM_CLOUD_PASSWORD="your-password"
-   ```
-5. [optional] Create and activate python venv,
-   ```shell
-   python -m venv .venv
-   source .venv/bin/activate
-   ```
-6. Install dependencies (install `requirements.txt` if you want development packages also),
-   ```shell
-   python -m pip install -r prod_requirements.txt
-   ```
-7. Run REST API server in the background.
-   ```shell
-   cd src
-   nohup python -m flask --app kronoterm_cloud_relay run --host=0.0.0.0 --port=8555 &
-   ```
-   Command breakdown
-   - `nohup` - no hang-up - don't exit process if shell session ends
-   - `--host=0.0.0.0` - run app on all addresses (to be available on local network)
-   - `--port=8555` - port on which to run, like in http://192.168.1.111:8555
-   - `&` - run process in the background
-   
-   Running in the foreground (with output to console) can be enabled by running flask server without `nohup` and `&`
-   ```shell
-   python -m flask --app kronoterm_cloud_relay run --host=0.0.0.0 --port=8555
-   ```
+### Docker
+On your host system that has [Docker](https://www.docker.com/) installed create `docker-compose.yml` 
+file with following content. 
+> Update file with your username and password!
+```yaml
+version: '3.8'
 
+services:
+  kronoterm_cloud_relay:
+    image: leskoiam/kronoterm_cloud_relay:latest
+    container_name: kronoterm_cloud_relay
+    restart: unless-stopped
+    ports:
+      - "8555:8555"  # Adjust the port mappings as needed
+    environment:
+      # Add your kronoterm cloud username and password
+      - KRONOTERM_CLOUD_USER="your-user"
+      - KRONOTERM_CLOUD_PASSWORD="your-password"
+```
+Spin up the image
+```shell
+docker compose up -d
+```
 
 ## Try it out
 With your favorite browser navigate to 

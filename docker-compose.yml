@@ -2,11 +2,13 @@ version: '3.8'
 
 services:
   kronoterm_cloud_relay:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: leskoiam/kronoterm_cloud_relay:latest
+    container_name: kronoterm_cloud_relay
+    restart: unless-stopped
     ports:
-      - "8555:8555"
+      - "8555:8555"  # Adjust the port mappings as needed
     environment:
-      - FLASK_APP=src/kronoterm_cloud_relay.py
-    command: flask run --host=0.0.0.0 --port=8555
+      # Add your kronoterm cloud username and password
+      - KRONOTERM_CLOUD_USER="your-user"
+      - KRONOTERM_CLOUD_PASSWORD="your-password"
+

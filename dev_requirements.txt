@@ -2,5 +2,5 @@
 -r prod_requirements.txt
 
 # Development
-ruff>=0.6.4
-bumpver>=2023.1129
+ruff>=0.7.4
+bumpver>=2023.1130

@@ -21,7 +21,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8555
 
 # Define environment variable
-ENV FLASK_APP=src/kronoterm_cloud_relay.py
+#ENV FLASK_APP=src/kronoterm_cloud_relay.py
 
-# Run app.py when the container launches
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8555"]
+# Run app when the container launches
+CMD ["fastapi", "run", "src/kronoterm_cloud_relay.py", "--host=0.0.0.0", "--port=8555"]

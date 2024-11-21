@@ -1,35 +1,25 @@
 __version__ = "0.0.8"
 
 import logging
-import os
 
 from dotenv import load_dotenv
-from flask import Flask
-from flask_restful import Api, Resource, reqparse
-from kronoterm_cloud_api.client import KronotermCloudApi
+from fastapi import FastAPI, HTTPException
+from kronoterm_cloud_api.client import KronotermCloudApi, KronotermCloudApiException
 from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, HeatingLoopStatus, WorkingFunction
 
-log = logging.getLogger(__name__)
+from src.config import KRONOTERM_CLOUD_PASSWORD, KRONOTERM_CLOUD_USER
+
+log = logging.getLogger("uvicorn.error")
 
 load_dotenv()
 
-hp_api = KronotermCloudApi(username=os.getenv("KRONOTERM_CLOUD_USER"), password=os.getenv("KRONOTERM_CLOUD_PASSWORD"))
+hp_api = KronotermCloudApi(username=KRONOTERM_CLOUD_USER, password=KRONOTERM_CLOUD_PASSWORD)
 hp_api.login()
 hp_api.update_heat_pump_basic_information()
-
-app = Flask(__name__)
-api = Api(app)
-
-parser = reqparse.RequestParser()
-parser.add_argument("temperature", type=float)
-parser.add_argument("mode", type=str)
-# HeatingLoop.HEATING_LOOP_1 = 1
-# HeatingLoop.HEATING_LOOP_2 = 2
-# HeatingLoop.TAP_WATER = 5
-parser.add_argument("heating_loop", type=int)
+app = FastAPI()
 
 
-def info_summary() -> dict:
+def __info_summary() -> dict:
     """Summary.
 
     :return: summary
@@ -96,115 +86,135 @@ def info_summary() -> dict:
     return output
 
 
-class HPInfo(Resource):
-    def get(self, about, heating_loop=None):
-        """Get heat pump data based on `about` argument.
-
-        hp_info
-        /hp_info/<string:about>
-        """
-        values = set(item.value for item in HeatingLoop)  # WA
-        if heating_loop is not None and heating_loop not in values:
-            return {"message": f"Heating loop '{heating_loop}' not supported"}, 404
-        match about:
-            case "info_summary":
-                return {"data": info_summary()}
-            case "initial_data":
-                return {"data": hp_api.get_initial_data()}
-            case "basic_data":
-                return {"data": hp_api.get_basic_data()}
-            case "system_review":
-                return {"data": hp_api.get_system_review_data()}
-            case "heating_loop":
-                heating_loop = HeatingLoop(heating_loop)
-                log.info("heating loop data for %s", heating_loop)
-                return {"data": hp_api.get_heating_loop_data(heating_loop)}
-            case "alarms":
-                return {"data": hp_api.get_alarms_data()}
-            case _:
-                return f"hp_info/{about} not supported", 404
+@app.get("/")
+def about():
+    """Return API name and version"""
+    return {"detail": "kronoterm-cloud-relay", "version": __version__}
 
 
-class HPController(Resource):
-    def post(self, operation):
-        """Set heat pump temperature and operation mode.
-
-        hp_control
-        /hp_control/<string:operation>/
-        payload = {"heating_loop": kronoterm_enums.HeatingLoop.value}
-        """
-        args = parser.parse_args()
-        heating_loop = args.get("heating_loop")
-        values = set(item.value for item in HeatingLoop)  # WA
-        if heating_loop not in values:
-            return {"message": f"Heating loop '{heating_loop}' not supported"}, 404
-        heating_loop = HeatingLoop(heating_loop)
-        match operation:
-            case "set_target_temperature":
-                temp = args.get("temperature")
-                if temp is not None:
-                    hp_api.set_heating_loop_target_temperature(heating_loop, temp)
-                    return {
-                        "message": f"Set temperature of '{heating_loop.name}' to {temp} degrees Celsius",
-                        "telemetry_check": hp_api.get_heating_loop_target_temperature(heating_loop) == temp,
-                    }
-                else:
-                    return {"message": "set-temperature arg/s missing"}, 404
-
-            case "set_heating_loop_mode":
-                mode = args.get("mode").upper()
-                if mode is not None:
-                    mode = mode.upper()
-                    if mode == "ON":
-                        hp_api.set_heating_loop_mode(heating_loop, HeatingLoopMode.ON)
-                    elif mode == "OFF":
-                        hp_api.set_heating_loop_mode(heating_loop, HeatingLoopMode.OFF)
-                    elif mode == "AUTO":
-                        hp_api.set_heating_loop_mode(heating_loop, HeatingLoopMode.AUTO)
-                    else:
-                        return {"message": f"Invalid mode {mode} for 'set_heating_loop_mode'"}, 404
-                    return {"message": f"Set heating loop {heating_loop.name} mode to {mode}"}
-                else:
-                    return {"message": "'mode' not set"}, 404
-            case _:
-                return {"message": f"'{operation}': Invalid operation"}, 404
+@app.post("/api/v1/echo/{msg}")
+def echo(msg: str):
+    """Echo into the void"""
+    return {"echo": msg}
 
 
-class RelayController(Resource):
-    def get(self, operation, optional=None):
-        """Healthcheck endpoint"""
-        match operation:
-            case "echo":
-                return {"message": f"relay - echo '{optional}' - OK"}, 200
-            case _:
-                return {"message": f"{operation}: Invalid operation"}, 404
+@app.get("/api/v1/info-summary")
+def info_summary() -> dict:
+    """
+    Retrieves a summary of heat pump information.
+    It's mostly for use with HomeAssistant or similar systems to limit calls to external API.
 
-    def post(self, operation, optional=None):
-        """Relay control and status"""
-        match operation:
-            case "login":
-                hp_api.login()
-                return {"message": "Login successful"}
-            case "refresh_basic_info":
-                hp_api.update_heat_pump_basic_information()
-                return {"message": "Refresh successful"}
-            case _:
-                return {"message": f"{operation}: Invalid operation"}, 404
+    :return: A dictionary containing the summary data.
+    """
+    return {"data": __info_summary()}
 
 
-class RelayControllerVersion(Resource):
-    def get(self):
-        """Return current version"""
-        return {"version": __version__}
+@app.get("/api/v1/initial-data")
+def initial_data():
+    """Get initial data"""
+    return {"data": hp_api.get_initial_data()}
 
 
-## Actually set up the API resource routing here
-api.add_resource(HPInfo, "/hp_info/<string:about>", "/hp_info/<string:about>/<int:heating_loop>")
-api.add_resource(HPController, "/hp_control/<string:operation>")
-
-api.add_resource(RelayControllerVersion, "/version")
-api.add_resource(RelayController, "/relay/<string:operation>/", "/relay/<string:operation>/<optional>")
+@app.get("/api/v1/basic-data")
+def basic_data():
+    """Get basic data"""
+    return {"data": hp_api.get_basic_data()}
 
 
-if __name__ == "__main__":
-    app.run()
+@app.get("/api/v1/system-review")
+def system_review():
+    """Get system review data"""
+    return {"data": hp_api.get_system_review_data()}
+
+
+@app.get("/api/v1/heating-loop/{loop_id}")
+def heating_loop(loop_id: int):
+    """Get heating loop data
+
+    :param loop_id: id of the loop for which data will be returned
+    """
+    values = set(item.value for item in HeatingLoop)  # WA
+    if loop_id not in values:
+        raise HTTPException(status_code=404, detail=f"heating loop '{loop_id}' not supported")
+    hl = HeatingLoop(loop_id)
+    log.info("heating loop data for %s", hl)
+    return {"data": hp_api.get_heating_loop_data(hl)}
+
+
+@app.get("/api/v1/alarms")
+def alarms():
+    """Get alarms data"""
+    return {"data": hp_api.get_alarms_data()}
+
+
+@app.post("/api/v1/target-temperature/{loop_id}/{target_temperature}")
+def set_target_temperature(loop_id: int, target_temperature: float | int):
+    """Set temperature of the heating loop
+
+    :param loop_id: heating loop id
+    :param target_temperature: temperature to set the loop to
+    """
+    values = set(item.value for item in HeatingLoop)  # WA
+    if loop_id not in values:
+        raise HTTPException(status_code=404, detail=f"heating loop '{loop_id}' not supported")
+    if not (16 < target_temperature < 28):
+        raise HTTPException(
+            status_code=400, detail="temperature colder than 16 and hotter than 28 Celsius not supported"
+        )
+    hl = HeatingLoop(loop_id)
+    hp_api.set_heating_loop_target_temperature(hl, target_temperature)
+    return {
+        "detail": f"Set temperature of '{hl.name}' to {target_temperature} degrees Celsius",
+        "telemetry_check": hp_api.get_heating_loop_target_temperature(hl) == target_temperature,
+    }
+
+
+@app.post("/api/v1/loop-mode/{loop_id}/{mode}")
+def set_heating_loop_mode(loop_id: int, mode: str):
+    """Set mode of the heating loop
+
+    :param loop_id: heating loop id
+    :param mode: mode to set the loop to
+    """
+    values = set(item.value for item in HeatingLoop)  # WA
+    if loop_id not in values:
+        raise HTTPException(status_code=404, detail=f"heating loop '{loop_id}' not supported")
+    mode = mode.upper()
+    if mode not in ("AUTO", "ON", "OFF"):
+        raise HTTPException(
+            status_code=400, detail="temperature colder than 16 and hotter than 28 Celsius not supported"
+        )
+    hl = HeatingLoop(loop_id)
+    hl_mode = HeatingLoopMode[mode]
+    hp_api.set_heating_loop_mode(hl, hl_mode)
+    return {
+        "detail": f"Set mode of '{hl.name}' to {hl_mode}",
+        "telemetry_check": hp_api.get_heating_loop_mode(hl) == hl_mode,
+    }
+
+
+@app.post("/api/v1/refresh-login")
+def refresh_login():
+    """
+    Refresh the login session with the Kronoterm Cloud API.
+
+    :raises HTTPException: If the login attempt fails, an HTTPException is raised with a status code of 503
+            and the exception detail.
+    :return: A JSON response indicating that the login refresh was successful.
+    """
+    try:
+        hp_api.login()
+    except KronotermCloudApiException as exc:
+        return HTTPException(status_code=503, detail=str(exc))
+    return {"detail": "Login refresh successful"}
+
+
+@app.post("/api/v1/refresh-basic-info")
+def refresh_basic_information():
+    """
+    Refresh the basic information of the heat pump from the Kronoterm Cloud API.
+
+    :return: A JSON response indicating that the basic information refresh was successful.
+    """
+    hp_api.update_heat_pump_basic_information()
+    return {"detail": "Basic information refresh successful"}

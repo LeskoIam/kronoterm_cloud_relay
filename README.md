@@ -27,49 +27,11 @@ docker compose up -d
 ```
 
 ## Try it out
-With your favorite browser navigate to 
+Navigate to
 
-`ip-or-host-address:8555/version`
+http://ip-or-host-address:8555/docs
 
-return should be the current version of kronoterm-cloud-relay
-```python
-{"version": "0.0.8"}
-```
-or
-
-`ip-or-host-address:8555/relay/echo/is_it_working`
-
-return should be whatever the last argument is, in this case `is_it_working`
-```python
-{"message": "relay - echo 'is_it_working' - OK"}
-```
-
-#### Home Assistant uses this one to avoid multiple API calls
-- `http://ip-or-host-address:8555/hp_info/info_summary`
-
-### Some currently supported endpoints
-#### Get data from heat pump (cloud)
-Method: `GET`
-- `http://ip-or-host-address:8555/hp_info/initial_data`
-- `http://ip-or-host-address:8555/hp_info/basic_data`
-- `http://ip-or-host-address:8555/hp_info/system_review`
-- `http://ip-or-host-address:8555/hp_info/heating_loop/<heating_loop_number>`
-  - `<heating_loop_number>`
-    - heating loop 1: `1`
-    - heating loop 2: `2`
-    - sanitary water (heating loop 5): `5`
-- `http://ip-or-host-address:8555/hp_info/alarms`
-#### Set heat pump configuration
-Method: `POST`
-- http://ip-or-host-address:8555/hp_control/set_target_temperature
-  - payload = `{"temperature": "24.5", "heating_loop": 1}`
-  - payload = `{"temperature": "24.5", "heating_loop": 2}`
-  - payload = `{"temperature": "24.5", "heating_loop": 5}`
-- http://ip-or-host-address:8555/hp_control/set_heating_loop_mode
-  - payload = `{"mode": "AUTO", "heating_loop" : 1}`
-  - payload = `{"mode": "ON", "heating_loop" : 1}`
-  - payload = `{"mode": "OFF", "heating_loop" : 1}`
-
+for list of supported API endpoints
 
 ## Usage with [Home Assistant](https://www.home-assistant.io/)
 Home Assistant has [REST](https://www.home-assistant.io/integrations/rest) integration which can request and post data from `relay`.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kronoterm-cloud-relay"
-version = "0.0.8"
+version = "0.0.9"
 readme = "README.md"
 description = "Relay between kronoterm cloud API and local network API"
 authors = [{name = "Matevž", email = "matevzlesko@gmail.com"},]
@@ -14,8 +14,7 @@ license = {file = "LICENSE"}
 
 requires-python = ">=3.8"
 dependencies = [
-    "Flask>=3.0.3",
-    "Flask-RESTful>=0.3.10",
+    "fastapi>=0.115.5",
     "python-dotenv>=1.0.1",
     "kronoterm-cloud-api>=0.1.2"
 ]
@@ -32,7 +31,7 @@ Issues = "https://github.com/LeskoIam/kronoterm_cloud_relay/issues"
 
 
 [tool.bumpver]
-current_version = "0.0.8"
+current_version = "0.0.9"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "Bump version {old_version} -> {new_version}."
 tag_message = "v{new_version}"
@@ -50,9 +49,6 @@ push = true
 ]
 "src/kronoterm_cloud_relay.py" = [
     '__version__ = "{version}"',
-]
-"README.md" = [
-    '{"version": "{version}"}'
 ]
 "docker_release.bat" = [
     'docker build -t leskoiam/kronoterm_cloud_relay:{version} .',

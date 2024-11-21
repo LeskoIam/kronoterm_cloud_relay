@@ -13,7 +13,7 @@ I found out the hard way if using hostnames sensors go to `unknown` or `unavaila
   name: Kronoterm heat pump
   unique_id: kronoterm_heat_pump
   scan_interval: 60
-  resource: http://ip-or-host:8555/hp_info/info_summary
+  resource: http://ip-or-host:8555/api/v1/info-summary
   value_template: "{{ value_json.data.system_info.working_function }}"
   json_attributes_path: '$.data'
   json_attributes:
@@ -170,42 +170,28 @@ I found out the hard way if using hostnames sensors go to `unknown` or `unavaila
 ```yaml
 rest_command:
   hp_set_mode_loop_1_on:
-    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    url: http://ip-or-host:8555/api/v1/loop-mode/1/ON
     method: POST
-    payload: '{"mode": "ON", "heating_loop": 1}'
-    content_type: 'application/json'
   hp_set_mode_loop_1_off:
-    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    url: http://ip-or-host:8555/api/v1/loop-mode/1/OFF
     method: POST
-    payload: '{"mode": "OFF", "heating_loop": 1}'
-    content_type: 'application/json'
   hp_set_mode_loop_1_auto:
-    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    url: http://ip-or-host:8555/api/v1/loop-mode/1/AUTO
     method: POST
-    payload: '{"mode": "AUTO", "heating_loop": 1}'
-    content_type: 'application/json'
     
   hp_set_mode_loop_2_on:
-    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    url: http://ip-or-host:8555/api/v1/loop-mode/2/ON
     method: POST
-    payload: '{"mode": "ON", "heating_loop": 2}'
-    content_type: 'application/json'
   hp_set_mode_loop_2_off:
-    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    url: http://ip-or-host:8555/api/v1/loop-mode/2/OFF
     method: POST
-    payload: '{"mode": "OFF", "heating_loop": 2}'
-    content_type: 'application/json'
   hp_set_mode_loop_2_auto:
-    url: http://ip-or-host:8555/hp_control/set_heating_loop_mode
+    url: http://ip-or-host:8555/api/v1/loop-mode/2/AUTO
     method: POST
-    payload: '{"mode": "AUTO", "heating_loop": 2}'
-    content_type: 'application/json'
   
   hp_set_temperature:
-    url: http://ip-or-host:8555/hp_control/set_target_temperature
+    url: http://ip-or-host:8555/api/v1/target-temperature/2/{{ set_temp }}
     method: POST
-    payload: '{"temperature": "{{ set_temp }}", "heating_loop": 2}'
-    content_type: 'application/json'
 ```
 
 ### Automation to sync it to `input_number` helper

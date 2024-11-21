@@ -1,5 +1,4 @@
 # Base (production)
-Flask==3.1.0
-Flask-RESTful==0.3.10
+fastapi[standard]>=0.115.5
 python-dotenv>=1.0.1
 kronoterm-cloud-api>=0.1.11

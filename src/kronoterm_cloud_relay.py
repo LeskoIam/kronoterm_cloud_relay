@@ -9,7 +9,11 @@ from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, He
 
 from src.config import KRONOTERM_CLOUD_PASSWORD, KRONOTERM_CLOUD_USER
 
-log = logging.getLogger("uvicorn.error")
+log = logging.getLogger(__name__)
+
+logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s [%(levelname)-8s] "
+                           "%(module)s:%(funcName)s:%(lineno)d - %(message)s")
 
 load_dotenv()
 

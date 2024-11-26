@@ -13,4 +13,5 @@ services:
       # Add your kronoterm cloud username and password
       - KRONOTERM_CLOUD_USER="your-user"
       - KRONOTERM_CLOUD_PASSWORD="your-password"
+      - TZ=Europe/Paris   # set to your own timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 

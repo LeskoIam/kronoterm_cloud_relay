@@ -31,6 +31,7 @@ def __info_summary() -> dict:
     system_review_data = hp_api.get_system_review_data()
     loop_1_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_1)
     loop_2_data = hp_api.get_heating_loop_data(HeatingLoop.HEATING_LOOP_2)
+    loop_5_data = hp_api.get_heating_loop_data(HeatingLoop.TAP_WATER)
     alarms_data = hp_api.get_alarms_data()["AlarmsData"]
     power_consumption_data = hp_api.get_theoretical_power_consumption()
 
@@ -53,6 +54,12 @@ def __info_summary() -> dict:
     heating_loop_2_calc_target_temp = 0.0 if cal_target > 499 else cal_target
     heating_loop_2_working_status = loop_2_data["HeatingCircleData"]["circle_status"]
     heating_loop_2_working_mode = loop_2_data["HeatingCircleData"]["circle_mode"]
+
+    heating_loop_5_target_temp = float(loop_5_data["HeatingCircleData"]["circle_temp"])
+    cal_target = float(loop_5_data["HeatingCircleData"]["circle_calc_temp"])
+    heating_loop_5_calc_target_temp = 0.0 if cal_target > 499 else cal_target
+    heating_loop_5_working_status = loop_5_data["HeatingCircleData"]["circle_status"]
+    heating_loop_5_working_mode = loop_5_data["HeatingCircleData"]["circle_mode"]
 
     output = {
         "hp_id": hp_api.hp_id,
@@ -85,6 +92,12 @@ def __info_summary() -> dict:
             "calc_target_temp": heating_loop_2_calc_target_temp,
             "working_status": HeatingLoopStatus(heating_loop_2_working_status).name,
             "working_mode": HeatingLoopMode(heating_loop_2_working_mode).name,
+        },
+        "heating_loop_5": {
+            "target_temp": heating_loop_5_target_temp,
+            "calc_target_temp": heating_loop_5_calc_target_temp,
+            "working_status": HeatingLoopStatus(heating_loop_5_working_status).name,
+            "working_mode": HeatingLoopMode(heating_loop_5_working_mode).name,
         },
     }
     return output

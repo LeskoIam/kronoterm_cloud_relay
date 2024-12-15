@@ -56,7 +56,8 @@ def __info_summary() -> dict:
     heating_loop_2_working_mode = loop_2_data["HeatingCircleData"]["circle_mode"]
 
     heating_loop_5_target_temp = float(loop_5_data["HeatingCircleData"]["circle_temp"])
-    heating_loop_5_calc_target_temp = float(loop_5_data["HeatingCircleData"]["circle_calc_temp"])
+    cal_target = float(loop_5_data["HeatingCircleData"]["circle_calc_temp"])
+    heating_loop_5_calc_target_temp = 0.0 if cal_target > 499 else cal_target
     heating_loop_5_working_status = loop_5_data["HeatingCircleData"]["circle_status"]
     heating_loop_5_working_mode = loop_5_data["HeatingCircleData"]["circle_mode"]
 

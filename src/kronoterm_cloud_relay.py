@@ -174,9 +174,14 @@ def set_target_temperature(loop_id: int, target_temperature: float | int):
     values = set(item.value for item in HeatingLoop)  # WA
     if loop_id not in values:
         raise HTTPException(status_code=404, detail=f"heating loop '{loop_id}' not supported")
-    if not (16 < target_temperature < 28):
+    hl = HeatingLoop(loop_id)
+    max_temp = 28
+    if hl == HeatingLoop.TAP_WATER:
+        max_temp = 60
+    if not (16 <= target_temperature <= max_temp):
         raise HTTPException(
-            status_code=400, detail="temperature colder than 16 and hotter than 28 Celsius not supported"
+            status_code=400,
+            detail=f"temperature colder than 16 and hotter than {max_temp} Celsius not supported for {hl}",
         )
     hl = HeatingLoop(loop_id)
     hp_api.set_heating_loop_target_temperature(hl, target_temperature)

@@ -37,7 +37,10 @@ def __info_summary() -> dict:
 
     room_temperature = float(system_review_data["TemperaturesAndConfig"]["heating_circle_2_temp"])
     outlet_temperature = float(system_review_data["CurrentFunctionData"][0]["dv_temp"])
-    heating_system_pressure = float(system_review_data["CurrentFunctionData"][0]["heating_system_pressure"])
+    try:
+        heating_system_pressure = float(system_review_data["CurrentFunctionData"][0]["heating_system_pressure"])
+    except KeyError:
+        heating_system_pressure = 0
     outside_temperature = float(system_review_data["TemperaturesAndConfig"]["outside_temp"])
     sanitary_water_temperature = float(system_review_data["TemperaturesAndConfig"]["tap_water_temp"])
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]

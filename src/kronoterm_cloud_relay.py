@@ -40,7 +40,8 @@ def __info_summary() -> dict:
     try:
         heating_system_pressure = float(system_review_data["CurrentFunctionData"][0]["heating_system_pressure"])
     except KeyError:
-        heating_system_pressure = 0
+        log.warning("Missing info: 'heating_system_pressure'")
+        heating_system_pressure = -1
     outside_temperature = float(system_review_data["TemperaturesAndConfig"]["outside_temp"])
     sanitary_water_temperature = float(system_review_data["TemperaturesAndConfig"]["tap_water_temp"])
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]

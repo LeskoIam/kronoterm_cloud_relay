@@ -171,26 +171,64 @@ I found out the hard way if using hostnames sensors go to `unknown` or `unavaila
 rest_command:
   hp_set_mode_loop_1_on:
     url: http://ip-or-host:8555/api/v1/loop-mode/1/ON
+    verify_ssl: false
     method: POST
   hp_set_mode_loop_1_off:
     url: http://ip-or-host:8555/api/v1/loop-mode/1/OFF
+    verify_ssl: false
     method: POST
   hp_set_mode_loop_1_auto:
     url: http://ip-or-host:8555/api/v1/loop-mode/1/AUTO
+    verify_ssl: false
     method: POST
-    
+
   hp_set_mode_loop_2_on:
     url: http://ip-or-host:8555/api/v1/loop-mode/2/ON
+    verify_ssl: false
     method: POST
   hp_set_mode_loop_2_off:
     url: http://ip-or-host:8555/api/v1/loop-mode/2/OFF
+    verify_ssl: false
     method: POST
   hp_set_mode_loop_2_auto:
     url: http://ip-or-host:8555/api/v1/loop-mode/2/AUTO
+    verify_ssl: false
     method: POST
-  
+
+  hp_set_mode_loop_5_on:
+    url: http://ip-or-host:8555/api/v1/loop-mode/5/ON
+    verify_ssl: false
+    method: POST
+  hp_set_mode_loop_5_off:
+    url: http://ip-or-host:8555/api/v1/loop-mode/5/OFF
+    verify_ssl: false
+    method: POST
+  hp_set_mode_loop_5_auto:
+    url: http://ip-or-host:8555/api/v1/loop-mode/5/AUTO
+    verify_ssl: false
+    method: POST
+
+  hp_set_operating_mode_comfort:
+    url: http://ip-or-host:8555/api/v1/heatpump-mode/COMFORT
+    verify_ssl: false
+    method: POST
+  hp_set_operating_mode_auto:
+    url: http://ip-or-host:8555/api/v1/heatpump-mode/AUTO
+    verify_ssl: false
+    method: POST
+  hp_set_operating_mode_eco:
+    url: http://ip-or-host:8555/api/v1/heatpump-mode/ECO
+    verify_ssl: false
+    method: POST
+
   hp_set_temperature:
     url: http://ip-or-host:8555/api/v1/target-temperature/2/{{ set_temp }}
+    verify_ssl: false
+    method: POST
+
+  hp_set_tap_water_temperature:
+    url: http://ip-or-host:8555/api/v1/target-temperature/5/{{ set_temp }}
+    verify_ssl: false
     method: POST
 ```
 

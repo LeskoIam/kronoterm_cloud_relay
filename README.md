@@ -22,8 +22,8 @@ services:
     #   - "cloud.kronoterm.com=145.14.48.71"  # TODO: don't forget to periodically check the validity of IP
     environment:
       # Add your kronoterm cloud username and password
-      - KRONOTERM_CLOUD_USER="your-user"
-      - KRONOTERM_CLOUD_PASSWORD="your-password"
+      - KRONOTERM_CLOUD_USER=your-user
+      - KRONOTERM_CLOUD_PASSWORD=your-password
       - TZ=Europe/Paris   # set to your own timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 ```
 Spin up the image

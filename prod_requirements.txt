@@ -1,4 +1,4 @@
 # Base (production)
 fastapi[standard]>=0.115.12
 python-dotenv>=1.1.0
-kronoterm-cloud-api>=0.1.13
+kronoterm-cloud-api>=0.1.15

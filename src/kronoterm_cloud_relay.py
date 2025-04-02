@@ -5,7 +5,13 @@ import logging
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from kronoterm_cloud_api.client import KronotermCloudApi, KronotermCloudApiException
-from kronoterm_cloud_api.kronoterm_enums import HeatingLoop, HeatingLoopMode, HeatingLoopStatus, WorkingFunction
+from kronoterm_cloud_api.kronoterm_enums import (
+    HeatingLoop,
+    HeatingLoopMode,
+    HeatingLoopStatus,
+    HeatPumpMode,
+    WorkingFunction,
+)
 
 from src.config import KRONOTERM_CLOUD_PASSWORD, KRONOTERM_CLOUD_USER
 
@@ -207,15 +213,29 @@ def set_heating_loop_mode(loop_id: int, mode: str):
         raise HTTPException(status_code=404, detail=f"heating loop '{loop_id}' not supported")
     mode = mode.upper()
     if mode not in ("AUTO", "ON", "OFF"):
-        raise HTTPException(
-            status_code=400, detail="temperature colder than 16 and hotter than 28 Celsius not supported"
-        )
+        raise HTTPException(status_code=400, detail=f"loop mode {mode} not supported")
     hl = HeatingLoop(loop_id)
     hl_mode = HeatingLoopMode[mode]
     hp_api.set_heating_loop_mode(hl, hl_mode)
     return {
         "detail": f"Set mode of '{hl.name}' to {hl_mode}",
         "telemetry_check": hp_api.get_heating_loop_mode(hl) == hl_mode,
+    }
+
+
+@app.post("/api/v1/heatpump-mode/{mode}")
+def set_heat_pump_operating_mode(mode: str):
+    """Set heat pump operating mode
+
+    :param mode: mode to set the loop to
+    """
+    if mode not in ("COMFORT", "AUTO", "ECO"):
+        raise HTTPException(status_code=400, detail=f"heat pump operating mode {mode} not supported")
+    hp_mode = HeatPumpMode[mode]
+    hp_api.set_heat_pump_operating_mode(hp_mode)
+    return {
+        "detail": f"Set heat pump operating mode to {hp_mode}",
+        "telemetry_check": hp_api.get_heat_pump_operating_mode() == hp_mode,
     }
 
 

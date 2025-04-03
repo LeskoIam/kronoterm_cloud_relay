@@ -9,7 +9,7 @@ from kronoterm_cloud_api.kronoterm_enums import (
     HeatingLoop,
     HeatingLoopMode,
     HeatingLoopStatus,
-    HeatPumpMode,
+    HeatPumpOperatingMode,
     WorkingFunction,
 )
 
@@ -51,6 +51,7 @@ def __info_summary() -> dict:
     outside_temperature = float(system_review_data["TemperaturesAndConfig"]["outside_temp"])
     sanitary_water_temperature = float(system_review_data["TemperaturesAndConfig"]["tap_water_temp"])
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]
+    heat_pump_operating_mode = HeatPumpOperatingMode(system_review_data["TemperaturesAndConfig"]["main_mode"])
 
     heating_loop_1_current_temp = float(system_review_data["SystemData"][1]["circle_temp"])
     heating_loop_1_target_temp = float(loop_1_data["HeatingCircleData"]["circle_temp"])
@@ -77,6 +78,7 @@ def __info_summary() -> dict:
         "user_level": hp_api.user_level,
         "heating_loop_names": hp_api.loop_names,
         "alarms": alarms_data,
+        "heat_pump_operating_mode": heat_pump_operating_mode,
         "system_info": {
             "room_temperature": room_temperature,
             "outlet_temperature": outlet_temperature,
@@ -231,7 +233,7 @@ def set_heat_pump_operating_mode(mode: str):
     """
     if mode not in ("COMFORT", "AUTO", "ECO"):
         raise HTTPException(status_code=400, detail=f"heat pump operating mode {mode} not supported")
-    hp_mode = HeatPumpMode[mode]
+    hp_mode = HeatPumpOperatingMode[mode]
     hp_api.set_heat_pump_operating_mode(hp_mode)
     return {
         "detail": f"Set heat pump operating mode to {hp_mode}",

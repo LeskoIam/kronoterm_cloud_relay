@@ -22,6 +22,7 @@ I found out the hard way if using hostnames sensors go to `unknown` or `unavaila
     - user_level
     - heating_loop_names
     - alarms
+    - heat_pump_operating_mode
     - system_info
     - heating_loop_1
     - heating_loop_2

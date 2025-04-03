@@ -51,7 +51,7 @@ def __info_summary() -> dict:
     outside_temperature = float(system_review_data["TemperaturesAndConfig"]["outside_temp"])
     sanitary_water_temperature = float(system_review_data["TemperaturesAndConfig"]["tap_water_temp"])
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]
-    heat_pump_operating_mode = HeatPumpOperatingMode(system_review_data["TemperaturesAndConfig"]["main_mode"])
+    heat_pump_operating_mode = HeatPumpOperatingMode(system_review_data["TemperaturesAndConfig"]["main_mode"]).name
 
     heating_loop_1_current_temp = float(system_review_data["SystemData"][1]["circle_temp"])
     heating_loop_1_target_temp = float(loop_1_data["HeatingCircleData"]["circle_temp"])

@@ -5,6 +5,10 @@ FROM python:3.12-alpine
 WORKDIR /app
 
 COPY ./prod_requirements.txt /app
+
+# Install gcc,... for psutils (fastapi_utils dependencie) to build
+RUN apk add gcc python3-dev musl-dev linux-headers
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r prod_requirements.txt
 
@@ -16,9 +20,6 @@ COPY ./pyproject.toml /app
 
 # Make port 8555 available to the world outside this container
 EXPOSE 8555
-
-# Define environment variables
-# ENV_VAR_1=6
 
 # Run app when the container launches
 CMD ["fastapi", "run", "src/kronoterm_cloud_relay.py", "--host=0.0.0.0", "--port=8555"]

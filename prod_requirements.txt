@@ -2,3 +2,5 @@
 fastapi[standard]>=0.115.12
 python-dotenv>=1.1.0
 kronoterm-cloud-api>=0.1.16
+prometheus-client>=0.21.1
+fastapi-utils[all]>=0.8.0

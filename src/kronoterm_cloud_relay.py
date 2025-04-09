@@ -1,9 +1,11 @@
 __version__ = "0.0.21"
 
 import logging
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi_utils.tasks import repeat_every
 from kronoterm_cloud_api.client import KronotermCloudApi, KronotermCloudApiException
 from kronoterm_cloud_api.kronoterm_enums import (
     HeatingLoop,
@@ -12,8 +14,9 @@ from kronoterm_cloud_api.kronoterm_enums import (
     HeatPumpOperatingMode,
     WorkingFunction,
 )
+from prometheus_client import Gauge, Info, make_asgi_app
 
-from src.config import KRONOTERM_CLOUD_PASSWORD, KRONOTERM_CLOUD_USER
+from src.config import KRONOTERM_CLOUD_PASSWORD, KRONOTERM_CLOUD_USER, PROMETHEUS_UPDATE_INTERVAL
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +29,44 @@ load_dotenv()
 hp_api = KronotermCloudApi(username=KRONOTERM_CLOUD_USER, password=KRONOTERM_CLOUD_PASSWORD)
 hp_api.login()
 hp_api.update_heat_pump_basic_information()
-app = FastAPI()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """https://fastapi.tiangolo.com/advanced/events/"""
+    # repeat_every decorated function must be called at startup to start the repeat mechanism
+    await hp_data_to_prometheus()
+    log.info("Initial data gathering done.")
+    yield
+    log.info("Exiting...")
+
+
+app = FastAPI(lifespan=lifespan)
+
+metrics_app = make_asgi_app()
+app.mount("/metrics", metrics_app)
+
+# Prometheus metrics
+hp_info = Info("basic", "Heat pump information", namespace="heat_pump")
+hp_temperatures_gauge = Gauge(
+    "temperature_c", "Heat pump temperatures [°C]", namespace="heat_pump", labelnames=["heating_loop", "name"]
+)
+hp_power_consumption_gauge = Gauge(
+    "power_consumption_kwh", "Heat pump power consumption [kWh]", namespace="heat_pump", labelnames=["function"]
+)
+hp_pressure_gauge = Gauge("pressure_bar", "Heat pump system pressure [bar]", namespace="heat_pump")
+hp_function_gauge = Gauge(
+    "function", "Heat pump function", namespace="heat_pump", labelnames=["heating_loop", "function"]
+)
+
+
+@repeat_every(seconds=PROMETHEUS_UPDATE_INTERVAL)  # 1 hour
+async def hp_data_to_prometheus():
+    """Update prometheus shared data.
+
+    Update interval controlled by PROMETHEUS_UPDATE_INTERVAL environment variable.
+    """
+    __info_summary()
 
 
 def __info_summary() -> dict:
@@ -51,7 +91,7 @@ def __info_summary() -> dict:
     outside_temperature = float(system_review_data["TemperaturesAndConfig"]["outside_temp"])
     sanitary_water_temperature = float(system_review_data["TemperaturesAndConfig"]["tap_water_temp"])
     working_function = system_review_data["TemperaturesAndConfig"]["working_function"]
-    heat_pump_operating_mode = HeatPumpOperatingMode(system_review_data["TemperaturesAndConfig"]["main_mode"]).name
+    heat_pump_operating_mode = HeatPumpOperatingMode(system_review_data["TemperaturesAndConfig"]["main_mode"])
 
     heating_loop_1_current_temp = float(system_review_data["SystemData"][1]["circle_temp"])
     heating_loop_1_target_temp = float(loop_1_data["HeatingCircleData"]["circle_temp"])
@@ -72,13 +112,52 @@ def __info_summary() -> dict:
     heating_loop_5_working_status = loop_5_data["HeatingCircleData"]["circle_status"]
     heating_loop_5_working_mode = loop_5_data["HeatingCircleData"]["circle_mode"]
 
+    # Prometheus
+    # Temperature
+    hp_temperatures_gauge.labels("system", "room_temperature").set(room_temperature)
+    hp_temperatures_gauge.labels("system", "outlet_temperature").set(outlet_temperature)
+    hp_temperatures_gauge.labels("system", "outside_temperature").set(outside_temperature)
+    hp_temperatures_gauge.labels("system", "sanitary_water_temperature").set(sanitary_water_temperature)
+
+    hp_temperatures_gauge.labels("loop_1", "current_temp").set(heating_loop_1_current_temp)
+    hp_temperatures_gauge.labels("loop_1", "target_temp").set(heating_loop_1_target_temp)
+    hp_temperatures_gauge.labels("loop_1", "calc_target_temp").set(heating_loop_1_calc_target_temp)
+
+    hp_temperatures_gauge.labels("loop_2", "target_temp").set(heating_loop_2_target_temp)
+    hp_temperatures_gauge.labels("loop_2", "calc_target_temp").set(heating_loop_2_calc_target_temp)
+
+    hp_temperatures_gauge.labels("loop_5", "target_temp").set(heating_loop_5_target_temp)
+    hp_temperatures_gauge.labels("loop_5", "calc_target_temp").set(heating_loop_5_calc_target_temp)
+    # Power consumption
+    hp_power_consumption_gauge.labels("heating").set(power_consumption_data.heating)
+    hp_power_consumption_gauge.labels("cooling").set(power_consumption_data.cooling)
+    hp_power_consumption_gauge.labels("tap_water").set(power_consumption_data.tap_water)
+    hp_power_consumption_gauge.labels("pumps").set(power_consumption_data.pumps)
+    hp_power_consumption_gauge.labels("total").set(power_consumption_data.all)
+    # Pressure
+    hp_pressure_gauge.set(heating_system_pressure)
+    # Function
+    hp_function_gauge.labels("system", "operating_mode").set(heat_pump_operating_mode.value)
+    hp_function_gauge.labels("system", "working_function").set(working_function)
+
+    hp_function_gauge.labels("loop_1", "working_status").set(heating_loop_1_working_status)
+    hp_function_gauge.labels("loop_1", "working_mode").set(heating_loop_1_working_mode)
+
+    hp_function_gauge.labels("loop_2", "working_status").set(heating_loop_2_working_status)
+    hp_function_gauge.labels("loop_2", "working_mode").set(heating_loop_2_working_mode)
+
+    hp_function_gauge.labels("loop_5", "working_status").set(heating_loop_5_working_status)
+    hp_function_gauge.labels("loop_5", "working_mode").set(heating_loop_5_working_mode)
+    # Info
+    hp_info.info({"hp_id": hp_api.hp_id, "location_name": hp_api.location_name, "user_level": str(hp_api.user_level)})
+
     output = {
         "hp_id": hp_api.hp_id,
         "location_name": hp_api.location_name,
         "user_level": hp_api.user_level,
         "heating_loop_names": hp_api.loop_names,
         "alarms": alarms_data,
-        "heat_pump_operating_mode": heat_pump_operating_mode,
+        "heat_pump_operating_mode": heat_pump_operating_mode.name,
         "system_info": {
             "room_temperature": room_temperature,
             "outlet_temperature": outlet_temperature,

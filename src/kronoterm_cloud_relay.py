@@ -3,7 +3,6 @@ __version__ = "0.0.22"
 import logging
 from contextlib import asynccontextmanager
 
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi_utils.tasks import repeat_every
 from kronoterm_cloud_api.client import KronotermCloudApi, KronotermCloudApiException
@@ -16,15 +15,11 @@ from kronoterm_cloud_api.kronoterm_enums import (
 )
 from prometheus_client import Gauge, Info, make_asgi_app
 
-from src.config import KRONOTERM_CLOUD_PASSWORD, KRONOTERM_CLOUD_USER, PROMETHEUS_UPDATE_INTERVAL
+from src.config import KRONOTERM_CLOUD_PASSWORD, KRONOTERM_CLOUD_USER, PROMETHEUS_UPDATE_INTERVAL, configure_logging
 
-log = logging.getLogger(__name__)
+configure_logging()
+log = logging.getLogger("relay")
 
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s [%(levelname)-8s] %(module)s:%(funcName)s:%(lineno)d - %(message)s"
-)
-
-load_dotenv()
 
 hp_api = KronotermCloudApi(username=KRONOTERM_CLOUD_USER, password=KRONOTERM_CLOUD_PASSWORD)
 hp_api.login()

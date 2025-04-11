@@ -1,0 +1,28 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+    simple:
+        format: "[%(levelname)-8s] %(asctime)s %(module)s:%(name)s.%(funcName)s():%(lineno)d: %(message)s"
+        datefmt: '%Y-%m-%d %H:%M:%S'
+
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: simple
+        stream: ext://sys.stdout
+
+loggers:
+    relay:
+        level: INFO
+        handlers: [console]
+        propagate: no
+    pytest:
+        level: DEBUG
+        handlers: [ console ]
+        propagate: no
+
+root:
+    level: WARNING
+    handlers: [console]

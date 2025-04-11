@@ -1,10 +1,12 @@
 import logging
+import logging.config
 import os
 from typing import Any
 
+import yaml
 from dotenv import load_dotenv
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("relay")
 
 load_dotenv()
 
@@ -47,10 +49,21 @@ def get_env(
     return sr
 
 
+LOGGING_CONFIG = get_env("LOGGING_CONFIG", default="config/logging.yaml")
+
+
+def configure_logging():
+    """Load the logging configuration file"""
+
+    with open(LOGGING_CONFIG, "rt") as f:
+        config = yaml.safe_load(f.read())
+    # Configure the logging module with the config file
+    logging.config.dictConfig(config)
+
+
 KRONOTERM_CLOUD_USER = get_env("KRONOTERM_CLOUD_USER")
 KRONOTERM_CLOUD_PASSWORD = get_env("KRONOTERM_CLOUD_PASSWORD")
 
 PROMETHEUS_UPDATE_INTERVAL = get_env("PROMETHEUS_UPDATE_INTERVAL", 30, cast=int, num_min=10)
 
 log.info("PROMETHEUS_UPDATE_INTERVAL=%s", PROMETHEUS_UPDATE_INTERVAL)
-log.info("TZ=%s", get_env("TZ"))

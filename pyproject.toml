@@ -55,7 +55,10 @@ push = true
     'docker tag leskoiam/kronoterm_cloud_relay:{version} leskoiam/kronoterm_cloud_relay:latest',
     'docker push leskoiam/kronoterm_cloud_relay:{version}'
 ]
-
+"tests/api_tests/test_api_smoke.py" = [
+    "AND the response JSON should contain 'detail' as 'kronoterm-cloud-relay' and 'version' as '{version}'",
+    'assert response.json() == {"detail": "kronoterm-cloud-relay", "version": "{version}"}'
+]
 
 [tool.ruff]
 target-version = "py312"
@@ -151,3 +154,4 @@ line-ending = "auto"
 pythonpath = [
     "src",
 ]
+addopts = "-vv -s -ra"

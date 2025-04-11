@@ -29,12 +29,21 @@ def get_env(
     sr = sr if isinstance(sr, str) else default
 
     if cast is not None:
-        sr = cast(sr)
-        if cast in (int, float):
-            if num_min is not None and sr < num_min:
-                sr = cast(num_min)
-            if num_max is not None and sr > num_max:
-                sr = cast(num_max)
+        try:
+            if cast is bool:
+                sr = sr.lower() in ("true", "1", "yes")
+            else:
+                sr = cast(sr)
+            if cast in (int, float):
+                if num_min is not None and sr < num_min:
+                    log.warning(f"Value for {var} is below minimum; setting to {num_min}")
+                    sr = cast(num_min)
+                if num_max is not None and sr > num_max:
+                    log.warning(f"Value for {var} is above maximum; setting to {num_max}")
+                    sr = cast(num_max)
+        except ValueError:
+            log.error(f"Failed to cast {var} to {cast.__name__}")
+            raise
     return sr
 
 
@@ -42,4 +51,6 @@ KRONOTERM_CLOUD_USER = get_env("KRONOTERM_CLOUD_USER")
 KRONOTERM_CLOUD_PASSWORD = get_env("KRONOTERM_CLOUD_PASSWORD")
 
 PROMETHEUS_UPDATE_INTERVAL = get_env("PROMETHEUS_UPDATE_INTERVAL", 30, cast=int, num_min=10)
+
 log.info("PROMETHEUS_UPDATE_INTERVAL=%s", PROMETHEUS_UPDATE_INTERVAL)
+log.info("TZ=%s", get_env("TZ"))

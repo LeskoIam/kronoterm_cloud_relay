@@ -132,7 +132,9 @@ ignore = [
     # `scope='function'` is implied in `@pytest.fixture()`
     "PT003",
     # Exception should be named with an Error suffix
-    "N818"
+    "N818",
+    # Use ternary operator instead of `if`-`else`-block
+    "SIM108"
 
 ]
 
@@ -143,3 +145,9 @@ unfixable = ["B"]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "src",
+]

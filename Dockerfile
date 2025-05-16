@@ -17,6 +17,7 @@ COPY ./src /app/src
 COPY ./LICENSE /app
 COPY ./README.md /app
 COPY ./pyproject.toml /app
+COPY ./config/logging.yaml /app/config/logging.yaml
 
 # Make port 8555 available to the world outside this container
 EXPOSE 8555

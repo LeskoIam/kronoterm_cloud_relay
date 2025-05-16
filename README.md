@@ -1,4 +1,5 @@
 [![ruff](https://github.com/LeskoIam/kronoterm_cloud_relay/actions/workflows/ruff.yml/badge.svg?branch=master)](https://github.com/LeskoIam/kronoterm_cloud_relay/actions/workflows/ruff.yml)
+[![tests](https://github.com/LeskoIam/kronoterm_cloud_relay/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/LeskoIam/kronoterm_cloud_relay/actions/workflows/tests.yml)
 # Kronoterm cloud relay
 
 Relay server for [Kronoterm](https://kronoterm.com//) cloud. It gets data from cloud and exposes it through REST API to local network.

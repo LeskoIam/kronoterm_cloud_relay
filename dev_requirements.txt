@@ -2,6 +2,6 @@
 -r prod_requirements.txt
 
 # Development
-ruff>=0.11.2
+ruff>=0.11.10
 bumpver>=2024.1130
 pytest>=8.3.5

@@ -55,7 +55,7 @@ hp_function_gauge = Gauge(
 )
 
 
-@repeat_every(seconds=PROMETHEUS_UPDATE_INTERVAL)  # 1 hour
+@repeat_every(seconds=PROMETHEUS_UPDATE_INTERVAL)
 async def hp_data_to_prometheus():
     """Update prometheus shared data.
 
@@ -81,6 +81,7 @@ def __info_summary() -> dict:
     try:
         heating_system_pressure = float(system_review_data["CurrentFunctionData"][0]["heating_system_pressure"])
     except KeyError:
+        # This should go away in kronoterm_cloud_relay v0.0.23 using kronoterm_cloud_api v0.1.17
         log.warning("Missing info: 'heating_system_pressure'")
         heating_system_pressure = -1
     outside_temperature = float(system_review_data["TemperaturesAndConfig"]["outside_temp"])

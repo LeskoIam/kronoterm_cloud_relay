@@ -121,3 +121,15 @@ def test_echo():
     response = client.post(f"/api/v1/echo/{msg}")
     assert response.status_code == 200
     assert response.json() == {"echo": msg}
+
+
+def test_prometheus_metrics():
+    """
+    FEATURE: PROMETHEUS METRICS ENDPOINT
+    GIVEN the FastAPI application is running
+    WHEN the 'GET' request is sent to the '/metrics' endpoint
+    THEN the response status code should be '200'
+    # AND the response JSON should contain a 'data' field
+    """
+    response = client.post(f"/metrics")
+    assert response.status_code == 200

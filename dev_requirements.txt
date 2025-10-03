@@ -3,5 +3,5 @@
 
 # Development
 ruff>=0.11.10
-bumpver>=2024.1130
+bumpver>=2025.1131
 pytest>=8.3.5

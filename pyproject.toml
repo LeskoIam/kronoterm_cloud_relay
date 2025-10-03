@@ -92,7 +92,9 @@ select = [
     # pydocstyle
     "D",
     # flake8-pytest-style
-    "PT"
+    "PT",
+    # mutable-argument-default
+    "B"
 ]
 
 ignore = [

@@ -12,11 +12,13 @@ authors = [{name = "Matevž", email = "matevzlesko@gmail.com"},]
 
 license = "GPL-3.0-or-later"
 
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.115.12",
-    "python-dotenv>=1.0.1",
-    "kronoterm-cloud-api>=0.1.16"
+    "python-dotenv>=1.1.1",
+    "kronoterm-cloud-api>=0.1.16",
+    "prometheus-client>=0.23.1",
+    "fastapi-utils[all]>=0.8.0",
+    "fastapi[standard]>=0.118.0",
 ]
 
 classifiers = [
@@ -29,6 +31,10 @@ classifiers = [
 Homepage = "https://github.com/LeskoIam/kronoterm_cloud_relay"
 Issues = "https://github.com/LeskoIam/kronoterm_cloud_relay/issues"
 
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.13.3",
+]
 
 [tool.bumpver]
 current_version = "0.0.24"

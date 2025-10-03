@@ -23,4 +23,4 @@ COPY ./config/logging.yaml /app/config/logging.yaml
 EXPOSE 8555
 
 # Run app when the container launches
-CMD ["fastapi", "run", "src/kronoterm_cloud_relay.py", "--host=0.0.0.0", "--port=8555"]
+CMD ["uvicorn", "src.kronoterm_cloud_relay:app", "--host=0.0.0.0", "--port=8555"]

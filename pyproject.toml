@@ -33,6 +33,7 @@ Issues = "https://github.com/LeskoIam/kronoterm_cloud_relay/issues"
 
 [tool.uv]
 dev-dependencies = [
+    "bumpver>=2025.1131",
     "ruff>=0.13.3",
 ]
 

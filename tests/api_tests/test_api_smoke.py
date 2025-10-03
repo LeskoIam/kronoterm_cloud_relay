@@ -15,7 +15,7 @@ def test_about():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/' endpoint
     THEN the response status code should be '200'
-    AND the response JSON should contain 'detail' as 'kronoterm-cloud-relay' and 'version' as '0.0.24'
+      AND the response JSON should contain 'detail' as 'kronoterm-cloud-relay' and 'version' as '0.0.24'
 
     ## Note: The version number used for test is automatically updated in the code at build time.
     """
@@ -30,7 +30,7 @@ def test_info_summary():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/api/v1/info-summary' endpoint
     THEN the response status code should be '200'
-    AND the response JSON should contain a 'data' field
+      AND the response JSON should contain a 'data' field
     """
 
     data_keys = [
@@ -61,7 +61,7 @@ def test_initial_data():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/api/v1/initial-data' endpoint
     THEN the response status code should be '200'
-    AND the response JSON should contain a 'data' field
+      AND the response JSON should contain a 'data' field
     """
     response = client.get("/api/v1/initial-data")
     assert response.status_code == 200
@@ -74,7 +74,7 @@ def test_basic_data():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/api/v1/basic-data' endpoint
     THEN the response status code should be '200'
-    AND the response JSON should contain a 'data' field
+      AND the response JSON should contain a 'data' field
     """
     response = client.get("/api/v1/basic-data")
     assert response.status_code == 200
@@ -87,7 +87,7 @@ def test_system_review():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/api/v1/system-review' endpoint
     THEN the response status code should be '200'
-    AND the response JSON should contain a 'data' field
+      AND the response JSON should contain a 'data' field
     """
     response = client.get("/api/v1/system-review")
     assert response.status_code == 200
@@ -102,7 +102,7 @@ def test_alarms():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/api/v1/alarms' endpoint
     THEN the response status code should be '200'
-    AND the response JSON should contain a 'data' field
+      AND the response JSON should contain a 'data' field
     """
     response = client.get("/api/v1/alarms")
     assert response.status_code == 200
@@ -115,7 +115,7 @@ def test_echo():
     GIVEN the FastAPI application is running
     WHEN the 'POST' request is sent to the '/api/v1/echo/{msg}' endpoint with a message
     THEN the response status code should be '200'
-    AND the response JSON should echo the same message
+      AND the response JSON should echo the same message
     """
     msg = "test-message"
     response = client.post(f"/api/v1/echo/{msg}")
@@ -129,7 +129,8 @@ def test_prometheus_metrics():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/metrics' endpoint
     THEN the response status code should be '200'
-    # AND the response JSON should contain a 'data' field
+      AND the response content should contain a 'heat_pump_basic_info{hp_id=' string
     """
-    response = client.post(f"/metrics")
+    response = client.post("/metrics")
     assert response.status_code == 200
+    assert "heat_pump_basic_info{hp_id=" in response.content.decode("utf-8")

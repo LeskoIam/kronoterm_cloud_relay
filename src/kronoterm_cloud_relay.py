@@ -145,7 +145,9 @@ def __info_summary() -> dict:
     hp_function_gauge.labels("loop_5", "working_status").set(heating_loop_5_working_status)
     hp_function_gauge.labels("loop_5", "working_mode").set(heating_loop_5_working_mode)
     # Info
-    hp_info.info({"hp_id": hp_api.hp_id, "location_name": hp_api.location_name, "user_level": str(hp_api.user_level)})
+    hp_info.info(
+        {"hp_id": str(hp_api.hp_id), "location_name": str(hp_api.location_name), "user_level": str(hp_api.user_level)}
+    )
 
     output = {
         "hp_id": hp_api.hp_id,

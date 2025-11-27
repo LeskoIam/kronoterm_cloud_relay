@@ -15,13 +15,13 @@ def test_about():
     GIVEN the FastAPI application is running
     WHEN the 'GET' request is sent to the '/' endpoint
     THEN the response status code should be '200'
-      AND the response JSON should contain 'detail' as 'kronoterm-cloud-relay' and 'version' as '0.0.25'
+      AND the response JSON should contain 'detail' as 'kronoterm-cloud-relay' and 'version' as '0.0.26'
 
     ## Note: The version number used for test is automatically updated in the code at build time.
     """
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"detail": "kronoterm-cloud-relay", "version": "0.0.25"}
+    assert response.json() == {"detail": "kronoterm-cloud-relay", "version": "0.0.26"}
 
 
 def test_info_summary():

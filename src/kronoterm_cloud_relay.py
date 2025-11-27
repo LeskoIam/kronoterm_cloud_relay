@@ -99,6 +99,7 @@ def __info_summary() -> dict:
     heating_loop_2_target_temp = float(loop_2_data["HeatingCircleData"]["circle_temp"])
     cal_target = float(loop_2_data["HeatingCircleData"]["circle_calc_temp"])
     heating_loop_2_calc_target_temp = 0.0 if cal_target > 499 else cal_target
+    heating_loop_2_inlet_temp = float(system_review_data["SystemData"][2]["inlet_temp"])
     heating_loop_2_working_status = loop_2_data["HeatingCircleData"]["circle_status"]
     heating_loop_2_working_mode = loop_2_data["HeatingCircleData"]["circle_mode"]
 
@@ -121,6 +122,7 @@ def __info_summary() -> dict:
 
     hp_temperatures_gauge.labels("loop_2", "target_temp").set(heating_loop_2_target_temp)
     hp_temperatures_gauge.labels("loop_2", "calc_target_temp").set(heating_loop_2_calc_target_temp)
+    hp_temperatures_gauge.labels("loop_2", "inlet_temp").set(heating_loop_2_inlet_temp)
 
     hp_temperatures_gauge.labels("loop_5", "target_temp").set(heating_loop_5_target_temp)
     hp_temperatures_gauge.labels("loop_5", "calc_target_temp").set(heating_loop_5_calc_target_temp)
@@ -179,6 +181,7 @@ def __info_summary() -> dict:
         "heating_loop_2": {
             "target_temp": heating_loop_2_target_temp,
             "calc_target_temp": heating_loop_2_calc_target_temp,
+            "inlet_temp": heating_loop_2_inlet_temp,
             "working_status": HeatingLoopStatus(heating_loop_2_working_status).name,
             "working_mode": HeatingLoopMode(heating_loop_2_working_mode).name,
         },

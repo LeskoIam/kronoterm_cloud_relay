@@ -158,6 +158,13 @@ I found out the hard way if using hostnames sensors go to `unknown` or `unavaila
     unit_of_measurement: °C
     device_class: temperature
     state_class: measurement
+  
+  - name: "Heat pump loop 2 inlet temperature"
+    unique_id: heating_loop_2_inlet_temp
+    state: "{{ state_attr('sensor.kronoterm_heat_pump', 'heating_loop_2').inlet_temp }}"
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
 
   - name: "Heat pump loop 2 working status"
     unique_id: heating_loop_2_working_status

@@ -16,7 +16,7 @@ requires-python = ">=3.12"
 dependencies = [
     "python-dotenv>=1.1.1",
     "kronoterm-cloud-api>=0.1.16",
-    "prometheus-client>=0.23.1",
+    "prometheus-client>=0.25.0",
     "fastapi-utils[all]>=0.8.0",
     "fastapi[standard]>=0.118.0",
 ]
